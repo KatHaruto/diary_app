@@ -1,7 +1,7 @@
 import type { GetStaticProps, NextPage } from 'next'
 import prisma from '../lib/prisma';
 import Post, { PostProps } from '../components/Post';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 
 
@@ -24,19 +24,44 @@ type Props = {
 }
 
 const Blog: React.FC<Props> = (props) => {
-  const [sortKey,setSortKey] = useState(1);
-  const selected = sortKey > 0 ? "Latest": "Oldest";
-  useEffect(()=>{
-    props.feed.sort((a,b) =>sortKey*(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
-  },[sortKey]);
+
+  const [sort,setSort] = useState({});
+  
+  const filtered = useMemo(() => {
+    let tmp_feed = props.feed;
+    if(sort.key){
+      tmp_feed = tmp_feed.sort((a,b) =>{
+        a = Date.parse(a[sort.key]);
+        b = Date.parse(b[sort.key]);
+        return (a === b ? 0 : a > b ? 1 : -1) * sort.order;
+      });
+    }
+    return tmp_feed;
+  },[sort]);
+  
+  const handlesort = column => {
+    if (sort.key === column){
+      setSort({ ...sort, order: -sort.order });
+    } else {
+        setSort({
+            key: column,
+            order: 1
+        })
+    }
+  };
   
   return (
     <Layout>
       <div className="page">
-      <select name='postsort'defaultValue={selected} onChange={() => setSortKey(key => (-1)*key)} >
-        <option value="Latest" >Latest</option>
-        <option value="Oldest">Oldest</option>
-      </select>
+      <table>
+            <thead>
+            <tr>
+                <th onClick={() => handlesort("createdAt")}>
+                  Created{sort.order > 0 ? " ▲":" ▼"}</th>
+                <th>タイトル</th>
+            </tr>
+            </thead>
+      </table>
         <h1>Public Feed</h1>
         <main>
           {props.feed.map((post) => (

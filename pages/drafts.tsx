@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout';
 import Post, { PostProps } from '../components/Post';
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   });
 
   const drafts = JSON.parse(JSON.stringify(_drafts));
-  drafts.sort((a,b) =>(-1)*(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
+  drafts.sort((a,b) => -1 * (Date.parse(a.createdAt) - Date.parse(b.createdAt)));
   return {
     props: { drafts },
   };
@@ -38,12 +38,30 @@ type Props = {
 const Drafts: React.FC<Props> = (props) => {
   const [session] = useSession();
 
-  const [sortKey,setSortKey] = useState(-1);
-  const selected = sortKey < 0 ? "latest": "oldest";
-  useEffect(()=>{
-    console.log(sortKey);
-    props.drafts.sort((a,b) =>-sortKey*(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
-  },[sortKey]);
+  const [sort,setSort] = useState({});
+
+  const filtered = useMemo(() => {
+    let tmp_drafts = props.drafts;
+    if(sort.key){
+      tmp_drafts = tmp_drafts.sort((a,b) =>{
+        a = Date.parse(a[sort.key]);
+        b = Date.parse(b[sort.key]);
+        return (a === b ? 0 : a > b ? 1 : -1) * sort.order;
+      });
+    }
+    return tmp_drafts;
+  },[sort]);
+  
+  const handlesort = column => {
+    if (sort.key === column){
+      setSort({ ...sort, order: -sort.order });
+    } else {
+        setSort({
+            key: column,
+            order: 1
+        })
+    }
+  };
 
   if (!session) {
     return (
@@ -57,11 +75,16 @@ const Drafts: React.FC<Props> = (props) => {
   return (
     <Layout>
       <div className="page">
-        {sortKey}
-      <select name='draftsort'defaultValue={selected} onChange={() => setSortKey(key => (-1)*key)} >
-        <option value="latest" >Latest</option>
-        <option value="oldest">Oldest</option>
-      </select>
+      <table>
+            <thead>
+            <tr>
+                <th onClick={() => handlesort("createdAt")}>
+                  Created{sort.order > 0 ? " ▲":" ▼"}</th>
+                <th>タイトル</th>
+            </tr>
+            </thead>
+      </table>
+
         <h1>My Drafts</h1>
         <main>
           {props.drafts.map((post) => (
