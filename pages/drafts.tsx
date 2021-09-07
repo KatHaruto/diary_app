@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Layout from '../components/Layout';
 import Post, { PostProps } from '../components/Post';
@@ -12,7 +12,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: { drafts: [] } };
   }
 
-  const drafts = await prisma.post.findMany({
+  const _drafts = await prisma.post.findMany({
     where: {
       author: { email: session.user.email },
       published: false,
@@ -23,6 +23,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       },
     },
   });
+
+  const drafts = JSON.parse(JSON.stringify(_drafts));
+  drafts.sort((a,b) =>(-1)*(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
   return {
     props: { drafts },
   };
@@ -34,6 +37,13 @@ type Props = {
 
 const Drafts: React.FC<Props> = (props) => {
   const [session] = useSession();
+
+  const [sortKey,setSortKey] = useState(-1);
+  const selected = sortKey < 0 ? "latest": "oldest";
+  useEffect(()=>{
+    console.log(sortKey);
+    props.drafts.sort((a,b) =>-sortKey*(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
+  },[sortKey]);
 
   if (!session) {
     return (
@@ -47,6 +57,11 @@ const Drafts: React.FC<Props> = (props) => {
   return (
     <Layout>
       <div className="page">
+        {sortKey}
+      <select name='draftsort'defaultValue={selected} onChange={() => setSortKey(key => (-1)*key)} >
+        <option value="latest" >Latest</option>
+        <option value="oldest">Oldest</option>
+      </select>
         <h1>My Drafts</h1>
         <main>
           {props.drafts.map((post) => (
