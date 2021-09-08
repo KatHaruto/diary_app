@@ -1,11 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Router from 'next/router';
+
+import spotifyAPI from '../lib/spotifyapi';
+import { Track } from 'spotify-web-api-ts/types/types/SpotifyObjects';
+import NotFoundImage from "./static/NotFoundImage.png";
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
+
+  const [searchWord, setSearchWord] = useState<string>("John");
+  const [searchResults, setSearchResults] = useState<Track[]>([]);
+
+  useEffect(() => {
+    const f = async() =>{
+      //const res = await spotifyAPI.search.search(searchWord,["artist","album","track"]).then(res => res.artists?.items).catch(err =>console.log(err));
+      if(searchWord){
+        const res = await spotifyAPI.search.searchTracks(searchWord)
+          .then(res => {
+            console.log(res);
+            setSearchResults(res.items);
+          })
+          .catch( () =>console.log("search error "));
+      }else{
+        setSearchResults([]);
+      }
+      
+    }
+    f()
+  },[searchWord]);
   
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -45,6 +70,17 @@ const Draft: React.FC = () => {
             rows={8}
             value={content}
           />
+          <input
+            type="text"
+            value={searchWord}
+            onChange={(e) => {setSearchWord(e.target.value)}}
+            placeholder="search"
+          />
+          <div className="results">
+            <ul>
+              {searchResults.map(r => <li onClick={() => console.log(r.artists[0].name)} key={r.id}><img src={r.album.images.length ? r.album.images[r.album.images.length-1].url : "../public/vercel.svg"} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{r.name}({r.artists[0].name})</li>)}
+            </ul>
+          </div>
           <input disabled={!content || !title} type="submit" value="投稿" onClick={()=> setPublished(true)}/>
           <input disabled={!content || !title} type="submit" value="下書き" />
           <a className="back" href="#" onClick={() => Router.back()}>

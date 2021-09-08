@@ -5,6 +5,7 @@ import Post, { PostProps } from '../components/Post';
 import { useSession, getSession } from 'next-auth/client';
 import prisma from '../lib/prisma';
 
+
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getSession({ req });
   if (!session) {
@@ -39,8 +40,8 @@ const Drafts: React.FC<Props> = (props) => {
   const [session] = useSession();
 
   const [sort,setSort] = useState({});
-
-  const filtered = useMemo(() => {
+  
+  useMemo(() => {
     let tmp_drafts = props.drafts;
     if(sort.key){
       tmp_drafts = tmp_drafts.sort((a,b) =>{
@@ -51,6 +52,8 @@ const Drafts: React.FC<Props> = (props) => {
     }
     return tmp_drafts;
   },[sort]);
+
+  
   
   const handlesort = column => {
     if (sort.key === column){
@@ -84,6 +87,7 @@ const Drafts: React.FC<Props> = (props) => {
             </tr>
             </thead>
       </table>
+      
 
         <h1>My Drafts</h1>
         <main>

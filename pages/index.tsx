@@ -4,6 +4,7 @@ import Post, { PostProps } from '../components/Post';
 import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 
+import spotifyAPI from '../lib/spotifyapi'; 
 
 export const getStaticProps: GetStaticProps = async () => {
   const _feed = await prisma.post.findMany({
@@ -23,11 +24,13 @@ type Props = {
   feed: PostProps[]
 }
 
-const Blog: React.FC<Props> = (props) => {
 
-  const [sort,setSort] = useState({});
+const Blog: React.FC<Props> = (props) => {
   
-  const filtered = useMemo(() => {
+  
+  const [sort,setSort] = useState({key:"",order:0,});
+
+  useMemo(() => {
     let tmp_feed = props.feed;
     if(sort.key){
       tmp_feed = tmp_feed.sort((a,b) =>{
