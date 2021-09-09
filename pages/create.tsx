@@ -2,28 +2,31 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Router from 'next/router';
 
-import spotifyAPI from '../lib/spotifyapi';
 import { Track } from 'spotify-web-api-ts/types/types/SpotifyObjects';
 import NotFoundImage from "./static/NotFoundImage.png";
+import handle from './api/post/[id]';
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
+  const [music, setMusic] = useState<Track>(null);
 
   const [searchWord, setSearchWord] = useState<string>("John");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
 
   useEffect(() => {
     const f = async() =>{
-      //const res = await spotifyAPI.search.search(searchWord,["artist","album","track"]).then(res => res.artists?.items).catch(err =>console.log(err));
       if(searchWord){
-        const res = await spotifyAPI.search.searchTracks(searchWord)
-          .then(res => {
-            console.log(res);
-            setSearchResults(res.items);
+        
+        const res = await fetch("./api/spotify/track?"+ new URLSearchParams({
+          word: searchWord,
+        })).then(async(res) => {
+            //return res.text();
+            const r = JSON.parse(await res.text());
+            setSearchResults(r);
           })
-          .catch( () =>console.log("search error "));
+          .catch( () => console.log("search error "));
       }else{
         setSearchResults([]);
       }
@@ -50,7 +53,16 @@ const Draft: React.FC = () => {
       console.error(error);
     }
   };
-
+  const handleMapSearchResult = (r:Track) => {
+  
+    const src = r.album.images.length ? r.album.images[r.album.images.length-1].url  : NotFoundImage.src;
+      
+    return (<li onClick={() => handleSelectMusic(r)} key={r.id}><img src={src} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{r.name}({r.artists[0].name + ": " + r.album.name})</li>);
+  
+  }
+  const handleSelectMusic = track => {
+    setMusic(track);
+  }
   return (
     <Layout>
       <div>
@@ -78,7 +90,10 @@ const Draft: React.FC = () => {
           />
           <div className="results">
             <ul>
-              {searchResults.map(r => <li onClick={() => console.log(r.artists[0].name)} key={r.id}><img src={r.album.images.length ? r.album.images[r.album.images.length-1].url : "../public/vercel.svg"} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{r.name}({r.artists[0].name})</li>)}
+              {music ? <li key={music.id}><img src={music.album.images[music.album.images.length-1].url} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{music.name}({music.artists[0].name})</li> :<li></li> }
+            </ul>
+            <ul>
+              {searchResults.map(r => handleMapSearchResult(r))}
             </ul>
           </div>
           <input disabled={!content || !title} type="submit" value="投稿" onClick={()=> setPublished(true)}/>

@@ -4,7 +4,7 @@ import prisma from '../../../lib/prisma';
 // POST /api/post
 // Required fields in body: title
 // Optional fields in body: content
-export default async function handle(req, res) {
+const handle = async (req, res) {
   const { title, content,published } = req.body;
 
   const session = await getSession({ req });
@@ -18,3 +18,5 @@ export default async function handle(req, res) {
   });
   res.json(result);
 }
+
+export default handle;

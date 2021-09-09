@@ -4,7 +4,6 @@ import Post, { PostProps } from '../components/Post';
 import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 
-import spotifyAPI from '../lib/spotifyapi'; 
 
 export const getStaticProps: GetStaticProps = async () => {
   const _feed = await prisma.post.findMany({
