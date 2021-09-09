@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 import Router from 'next/router';
-
+import Image from 'next/image';
 import { Track } from 'spotify-web-api-ts/types/types/SpotifyObjects';
 import NotFoundImage from "./static/NotFoundImage.png";
 import handle from './api/post/[id]';
 
 const Draft: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [published, setPublished] = useState(false);
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [published, setPublished] = useState<Boolean>(false);
   const [music, setMusic] = useState<Track>(null);
 
-  const [searchWord, setSearchWord] = useState<string>("John");
+  const [searchWord, setSearchWord] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
 
   useEffect(() => {
@@ -21,12 +21,11 @@ const Draft: React.FC = () => {
         
         const res = await fetch("./api/spotify/track?"+ new URLSearchParams({
           word: searchWord,
-        })).then(async(res) => {
-            //return res.text();
-            const r = JSON.parse(await res.text());
-            setSearchResults(r);
-          })
+        }))
+          .then(async(res) => JSON.parse(await res.text()))
           .catch( () => console.log("search error "));
+          
+        setSearchResults(res);
       }else{
         setSearchResults([]);
       }
@@ -35,10 +34,24 @@ const Draft: React.FC = () => {
     f()
   },[searchWord]);
   
+  const selectedmusicJSX = useMemo(() => {
+    if(music){
+      return <li key={music.id}><Image height={100} width={100} src={music.album.images[0].url} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{music.name}({music.artists[0].name})<div onClick={()=>setMusic(null)}>cancel</div></li>
+    }
+  },[music]);
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
-      const body = { title, content, published };
+      const album = {id:music.album.id, name:music.album.name}
+      const artists = { 
+        id: music.artists.map(a => a.id),
+        name: music.artists.map(a => a.name),
+      }
+      const url = music.album.images.length ? music.album.images[0].url  : NotFoundImage.src;
+      const spotify_url = music.external_urls.spotify
+      const song = {id:music.id, name:music.name, album:album ,artists:artists,image_url: url,spotify_url:spotify_url}
+      
+      const body = { title, content, published, song };
       await fetch('/api/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,7 +60,7 @@ const Draft: React.FC = () => {
       if(published){
         await Router.push('/');
       }else{
-        await Router.push('/drafts');
+        await Router.push('/posts');
       }
     } catch (error) {
       console.error(error);
@@ -55,12 +68,12 @@ const Draft: React.FC = () => {
   };
   const handleMapSearchResult = (r:Track) => {
   
-    const src = r.album.images.length ? r.album.images[r.album.images.length-1].url  : NotFoundImage.src;
+    const src = r.album.images.length ? r.album.images[0].url  : NotFoundImage.src;
       
-    return (<li onClick={() => handleSelectMusic(r)} key={r.id}><img src={src} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{r.name}({r.artists[0].name + ": " + r.album.name})</li>);
+    return (<li onClick={() => handleSelectMusic(r)} key={r.id}><Image src={src} height={100} width={100} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{r.name}({r.artists[0].name + ": " + r.album.name})</li>);
   
   }
-  const handleSelectMusic = track => {
+  const handleSelectMusic = (track: Track) => {
     setMusic(track);
   }
   return (
@@ -90,10 +103,10 @@ const Draft: React.FC = () => {
           />
           <div className="results">
             <ul>
-              {music ? <li key={music.id}><img src={music.album.images[music.album.images.length-1].url} onError={(e) => e.currentTarget.src=NotFoundImage.src} />{music.name}({music.artists[0].name})</li> :<li></li> }
+              {selectedmusicJSX}
             </ul>
             <ul>
-              {searchResults.map(r => handleMapSearchResult(r))}
+              {!selectedmusicJSX && searchResults.map(r => handleMapSearchResult(r))}
             </ul>
           </div>
           <input disabled={!content || !title} type="submit" value="投稿" onClick={()=> setPublished(true)}/>
@@ -105,7 +118,6 @@ const Draft: React.FC = () => {
       </div>
       <style jsx>{`
         .page {
-          background: var(--geist-background);
           padding: 3rem;
           display: flex;
           justify-content: center;

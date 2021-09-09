@@ -12,6 +12,6 @@ export default async function handler(req,res){
 
   const { word } = req.query;
 
-  const result = (await spotifyAPI.search.searchTracks(word));
+  const result = (await spotifyAPI.search.searchTracks(word,{market:"JP"}));
   res.json(result.items);
 }

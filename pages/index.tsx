@@ -6,42 +6,53 @@ import Layout from '../components/Layout';
 
 
 export const getStaticProps: GetStaticProps = async () => {
-  const _feed = await prisma.post.findMany({
+  let feed = await prisma.post.findMany({
+    orderBy:{
+      createdAt:"desc",
+    },
     where: { published: true },
     include: {
       author: {
         select: { name: true },
       },
+      music: {
+        select: { 
+          songName:true,
+          artistName:true,
+          imageUrl:true,
+          spotifyUrl:true,
+        }
+      },
     },
   });
-  const feed = JSON.parse(JSON.stringify(_feed));
-  feed.sort((a,b) =>-(Date.parse(a.createdAt) - Date.parse(b.createdAt)));
+  feed = JSON.parse(JSON.stringify(feed));
+
   return { props: { feed } };
 };
 
-type Props = {
-  feed: PostProps[]
-}
+type sortType = {
+  key: string,
+  order: number,
+};
 
-
-const Blog: React.FC<Props> = (props) => {
+const Blog: React.FC<{feed: PostProps[]}> = (props) => {
   
   
-  const [sort,setSort] = useState({key:"",order:0,});
+  const [sort,setSort] = useState<sortType>({key:"",order :0});
 
   useMemo(() => {
     let tmp_feed = props.feed;
     if(sort.key){
       tmp_feed = tmp_feed.sort((a,b) =>{
-        a = Date.parse(a[sort.key]);
-        b = Date.parse(b[sort.key]);
-        return (a === b ? 0 : a > b ? 1 : -1) * sort.order;
+        const d1 = Date.parse(a[sort.key]);
+        const d2 = Date.parse(b[sort.key]);
+        return (d1 === d2 ? 0 : d1 > d2 ? 1 : -1) * sort.order;
       });
     }
     return tmp_feed;
   },[sort]);
   
-  const handlesort = column => {
+  const handlesort = (column: string) => {
     if (sort.key === column){
       setSort({ ...sort, order: -sort.order });
     } else {

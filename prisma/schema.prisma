@@ -19,7 +19,21 @@ model Post {
   updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
   author    User?   @relation(fields: [authorId], references: [id])
   authorId  Int?
-  musicURL String? @map("music_url")
+  music Music @relation(fields: [musicID],references: [songId])
+  musicID String @map("music_id") 
+}
+
+model Music {
+  songId      String    @id @map(name:"song_id")
+  songName    String    @map(name:"song_name")
+  albumID     String    @map(name:"album_id")
+  albumName   String    @map(name:"album_name")
+  artistID    String[]  @map(name:"artist_id")
+  artistName  String[]  @map(name:"artist_name")
+  imageUrl    String    @map(name: "image_url")
+  spotifyUrl  String    @map(name:"spotify_url")
+  post Post[]
+  @@map(name: "music")
 }
 
 model User {

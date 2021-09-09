@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/client';
-import  {useRouter}from 'next/router';
+import Link from 'next/link';
+import  Router,{useRouter}from 'next/router';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import Layout from '../../components/Layout';
@@ -8,7 +9,7 @@ import { PostProps } from '../../components/Post';
 import prisma from '../../lib/prisma';
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const post = await prisma.post.findUnique({
+  let post = await prisma.post.findUnique({
     where: {
       id: Number(params?.id) || -1,
     },
@@ -18,28 +19,35 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       },
     },
   });
-   
-  return {
+  if(post !== null){
+    post = JSON.parse(JSON.stringify(post));
+    return {
       props: post,
-  };
+    };
+  }else{
+    return {
+      props:{}
+    }
+  }
+
+  
+
 };
 
 async function publishPost(id: number): Promise<void> {
-  const router= useRouter();
   await fetch(`http://localhost:3000/api/publish/${id}`, {
     method: 'PUT',
   });
 
-  await router.push('/');
+  await Router.push("/");
 }
 
 async function deletePost(id: number): Promise<void> {
-  const router = useRouter();
   await fetch(`http://localhost:3000/api/post/${id}`, {
     method: 'DELETE',
   });
-
-  router.back();
+  Router.back();
+  //await Router.push("/");
 }
 
 const Post: React.FC<PostProps> = (props) => {
@@ -65,11 +73,10 @@ const Post: React.FC<PostProps> = (props) => {
         )}
         {userHasValidSession && postBelongsToUser && (
           <button onClick={() => deletePost(props.id)}>Delete</button>
-        )} 
+        )}
       </div>
       <style jsx>{`
         .page {
-          background: var(--geist-background);
           padding: 2rem;
         }
 

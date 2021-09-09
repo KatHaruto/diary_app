@@ -1,7 +1,23 @@
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { signIn, signOut, useSession } from 'next-auth/client';
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { signOut, useSession } from "next-auth/client";
+import {
+  Button,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import {
+  HamburgerIcon,
+  AddIcon,
+  ExternalLinkIcon,
+  RepeatIcon,
+  EditIcon,
+} from "@chakra-ui/icons";
+import { Image } from "@chakra-ui/image";
 
 const Header: React.FC = () => {
   const router = useRouter();
@@ -9,11 +25,12 @@ const Header: React.FC = () => {
     router.pathname === pathname;
 
   const [session, loading] = useSession();
+  console.log(session.user.image);
 
   let left = (
     <div className="left">
       <Link href="/">
-        <a className="bold" data-active={isActive('/')}>
+        <a className="bold" data-active={isActive("/")}>
           Feed
         </a>
       </Link>
@@ -28,7 +45,7 @@ const Header: React.FC = () => {
           display: inline-block;
         }
 
-        .left a[data-active='true'] {
+        .left a[data-active="true"] {
           color: gray;
         }
 
@@ -45,7 +62,7 @@ const Header: React.FC = () => {
     left = (
       <div className="left">
         <Link href="/">
-          <a className="bold" data-active={isActive('/')}>
+          <a className="bold" data-active={isActive("/")}>
             Feed
           </a>
         </Link>
@@ -60,7 +77,7 @@ const Header: React.FC = () => {
             display: inline-block;
           }
 
-          .left a[data-active='true'] {
+          .left a[data-active="true"] {
             color: gray;
           }
 
@@ -86,7 +103,11 @@ const Header: React.FC = () => {
     right = (
       <div className="right">
         <Link href="/api/auth/signin">
-          <a data-active={isActive('/signup')}>Log in</a>
+          <a data-active={isActive("/signup")}>
+            <Button size="md" colorScheme="blue" mt="24px">
+              Log in
+            </Button>
+          </a>
         </Link>
         <style jsx>{`
           a {
@@ -117,12 +138,12 @@ const Header: React.FC = () => {
     left = (
       <div className="left">
         <Link href="/">
-          <a className="bold" data-active={isActive('/')}>
+          <a className="bold" data-active={isActive("/")}>
             Feed
           </a>
         </Link>
-        <Link href="/drafts">
-          <a data-active={isActive('/drafts')}>My drafts</a>
+        <Link href="/posts">
+          <a data-active={isActive("/posts")}>My Posts</a>
         </Link>
         <style jsx>{`
           .bold {
@@ -135,7 +156,7 @@ const Header: React.FC = () => {
             display: inline-block;
           }
 
-          .left a[data-active='true'] {
+          .left a[data-active="true"] {
             color: gray;
           }
 
@@ -147,14 +168,34 @@ const Header: React.FC = () => {
     );
     right = (
       <div className="right">
-        <p>
-          {session.user.name} ({session.user.email})
-        </p>
-        <Link href="/create">
-          <button>
-            <a>New post</a>
-          </button>
-        </Link>
+        <Menu>
+          <MenuButton aria-label="Options" variant="outline">
+            <Image
+              boxSize="2rem"
+              borderRadius="full"
+              src={session.user.image}
+              alt="Fluffybuns the destroyer"
+              mr="12px"
+            />
+          </MenuButton>
+
+          <MenuList>
+            <MenuItem icon={<AddIcon />}>New Tab</MenuItem>
+            <MenuItem icon={<ExternalLinkIcon />}>New Window</MenuItem>
+            <MenuItem icon={<RepeatIcon />}>Open Closed Tab</MenuItem>
+            <MenuItem icon={<EditIcon />}>Open File...</MenuItem>
+          </MenuList>
+        </Menu>
+
+        {router.pathname !== "/create" ? (
+          <Link href="/create">
+            <Button size="md" colorScheme="blue" mt="24px">
+              <a>New post</a>
+            </Button>
+          </Link>
+        ) : (
+          ""
+        )}
         <button onClick={() => signOut()}>
           <a>Log out</a>
         </button>
