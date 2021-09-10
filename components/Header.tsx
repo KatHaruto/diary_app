@@ -3,21 +3,23 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/client";
 import {
+  Avatar,
+  Box,
   Button,
+  Flex,
+  Heading,
+  HStack,
   IconButton,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuItem,
   MenuList,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
-import {
-  HamburgerIcon,
-  AddIcon,
-  ExternalLinkIcon,
-  RepeatIcon,
-  EditIcon,
-} from "@chakra-ui/icons";
-import { Image } from "@chakra-ui/image";
+import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { RiArticleLine, RiLogoutBoxRLine } from "react-icons/ri";
 
 const Header: React.FC = () => {
   const router = useRouter();
@@ -25,76 +27,23 @@ const Header: React.FC = () => {
     router.pathname === pathname;
 
   const [session, loading] = useSession();
-  console.log(session.user.image);
 
-  let left = (
-    <div className="left">
-      <Link href="/">
-        <a className="bold" data-active={isActive("/")}>
-          Feed
-        </a>
-      </Link>
-      <style jsx>{`
-        .bold {
-          font-weight: bold;
-        }
-
-        a {
-          text-decoration: none;
-          color: var(--geist-foreground);
-          display: inline-block;
-        }
-
-        .left a[data-active="true"] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </div>
+  const left = (
+    <Flex align="center" mr={5} color="black">
+      <Heading as="h1" size="lg" letterSpacing={"tighter"}>
+        <Link href="/">
+          <Text>App</Text>
+        </Link>
+      </Heading>
+    </Flex>
   );
 
   let right = null;
 
   if (loading) {
-    left = (
-      <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
-          </a>
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active="true"] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
     right = (
       <div className="right">
         <p>Validating session ...</p>
-        <style jsx>{`
-          .right {
-            margin-left: auto;
-          }
-        `}</style>
       </div>
     );
   }
@@ -109,143 +58,76 @@ const Header: React.FC = () => {
             </Button>
           </a>
         </Link>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          .right a {
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-        `}</style>
       </div>
     );
   }
 
   if (session) {
-    left = (
-      <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
-          </a>
-        </Link>
-        <Link href="/posts">
-          <a data-active={isActive("/posts")}>My Posts</a>
-        </Link>
-        <style jsx>{`
-          .bold {
-            font-weight: bold;
-          }
-
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          .left a[data-active="true"] {
-            color: gray;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-        `}</style>
-      </div>
-    );
     right = (
-      <div className="right">
+      <HStack spacing="5%">
+        <IconButton
+          mr="-3%"
+          size="lg"
+          aria-label="Search database"
+          color="gray"
+          colorScheme="whiteAlpha"
+          icon={<SearchIcon />}
+        />
         <Menu>
           <MenuButton aria-label="Options" variant="outline">
-            <Image
-              boxSize="2rem"
+            <Avatar
+              ml="-3%"
+              size="sm"
               borderRadius="full"
               src={session.user.image}
-              alt="Fluffybuns the destroyer"
-              mr="12px"
             />
           </MenuButton>
 
-          <MenuList>
-            <MenuItem icon={<AddIcon />}>New Tab</MenuItem>
-            <MenuItem icon={<ExternalLinkIcon />}>New Window</MenuItem>
-            <MenuItem icon={<RepeatIcon />}>Open Closed Tab</MenuItem>
-            <MenuItem icon={<EditIcon />}>Open File...</MenuItem>
+          <MenuList color="black">
+            <MenuItem>{session.user.name}</MenuItem>
+            <MenuDivider />
+            <MenuItem
+              icon={<RiArticleLine />}
+              onClick={() => {
+                router.push("/posts");
+              }}
+            >
+              My Post
+            </MenuItem>
+            <MenuItem icon={<RiLogoutBoxRLine />} onClick={() => signOut()}>
+              Log Out
+            </MenuItem>
           </MenuList>
         </Menu>
 
         {router.pathname !== "/create" ? (
           <Link href="/create">
-            <Button size="md" colorScheme="blue" mt="24px">
+            <Button size="sm" colorScheme="blue">
               <a>New post</a>
             </Button>
           </Link>
         ) : (
           ""
         )}
-        <button onClick={() => signOut()}>
-          <a>Log out</a>
-        </button>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: var(--geist-foreground);
-            display: inline-block;
-          }
-
-          p {
-            display: inline-block;
-            font-size: 13px;
-            padding-right: 1rem;
-          }
-
-          a + a {
-            margin-left: 1rem;
-          }
-
-          .right {
-            margin-left: auto;
-          }
-
-          .right a {
-            border: 1px solid var(--geist-foreground);
-            padding: 0.5rem 1rem;
-            border-radius: 3px;
-          }
-
-          button {
-            border: none;
-          }
-        `}</style>
-      </div>
+      </HStack>
     );
   }
 
   return (
-    <nav>
-      {left}
-      {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
-    </nav>
+    <Box>
+      <Flex
+        as="nav"
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+        my="2%"
+        mx="3%"
+        color="white"
+      >
+        {left}
+        {right}
+      </Flex>
+    </Box>
   );
 };
 
