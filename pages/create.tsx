@@ -27,6 +27,11 @@ import {
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 
+const convertMillisToMinutesAndSecret = (millis: number) => {
+  const minutes = Math.floor(millis / 60000);
+  const seconds = Number(((millis % 60000) / 1000).toFixed(0));
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+};
 const Draft: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
@@ -63,27 +68,38 @@ const Draft: React.FC = () => {
   const selectedmusicJSX = useMemo(() => {
     if (music) {
       return (
-        <VStack>
-          <Table>
-            <Tbody>
-              <Tr key={music.id}>
-                <Td>
-                  <Box position="relative" height="100px" width="100px">
-                    <Image
-                      layout="fill"
-                      src={music.album.images[0].url}
-                      onError={(e) => (e.currentTarget.src = NotFoundImage.src)}
-                    />
-                  </Box>
-                </Td>
-                <Td>
-                  {music.name}({music.artists[0].name})
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
-          <Button onClick={() => setMusic(null)}>cancel</Button>
-        </VStack>
+        <Box>
+          <Flex onClick={() => handleSelectMusic(music)} key={music.id} m="1">
+            <Box position="relative" height="100px" width="100px">
+              <Image
+                src={music.album.images[0].url}
+                layout={"fill"}
+                onError={(e) => {
+                  e.currentTarget.src = NotFoundImage.src;
+                }}
+              />
+            </Box>
+            <Box pl="3" isTruncated width="300px">
+              <Text fontWeight="semibold" fontSize="sm">
+                {music.name}
+              </Text>
+              <Text fontSize="xs">
+                {music.artists[0].name + ": " + music.album.name}
+              </Text>
+              <Text fontSize="xs">
+                {music.album.release_date + " "}
+                {convertMillisToMinutesAndSecret(music.duration_ms)}
+              </Text>
+            </Box>
+          </Flex>
+          <Button
+            onClick={() => {
+              setMusic(null);
+            }}
+          >
+            cancel
+          </Button>
+        </Box>
       );
     }
   }, [music]);
@@ -129,25 +145,27 @@ const Draft: React.FC = () => {
       : NotFoundImage.src;
 
     return (
-      <Tr onClick={() => handleSelectMusic(r)} key={r.id}>
-        <Td px="3%">
-          <Box position="relative" height="70px" width="70px">
-            <Image
-              src={src}
-              layout={"fill"}
-              onError={(e) => {
-                e.currentTarget.src = NotFoundImage.src;
-              }}
-            />
-          </Box>
-        </Td>
-        <Td>
+      <Flex onClick={() => handleSelectMusic(r)} key={r.id} m="1">
+        <Box position="relative" height="100px" width="100px">
+          <Image
+            src={src}
+            layout={"fill"}
+            onError={(e) => {
+              e.currentTarget.src = NotFoundImage.src;
+            }}
+          />
+        </Box>
+        <Box pl="3" isTruncated width="300px">
           <Text fontWeight="semibold" fontSize="sm">
             {r.name}
           </Text>
           <Text fontSize="xs">{r.artists[0].name + ": " + r.album.name}</Text>
-        </Td>
-      </Tr>
+          <Text fontSize="xs">
+            {r.album.release_date + " "}
+            {convertMillisToMinutesAndSecret(r.duration_ms)}
+          </Text>
+        </Box>
+      </Flex>
     );
   };
   const handleSelectMusic = (track: Track) => {
@@ -173,10 +191,10 @@ const Draft: React.FC = () => {
 
   return (
     <Layout>
-      <Wrap spacing="20%" m="10%" justify="center">
+      <Wrap spacing="20%" mx="3%" my="10%" justify="center">
         <WrapItem>
-          <VStack divider={<StackDivider borderColor="gray.200" />} spacing={2}>
-            <Box w="80%">
+          <VStack divider={<StackDivider borderColor="gray.200" />} spacing={4}>
+            <Box w="400px">
               <Input
                 value={searchWord}
                 onChange={(e) => {
@@ -184,14 +202,12 @@ const Draft: React.FC = () => {
                 }}
                 placeholder="search"
               />
+            </Box>
+            <Box w="400px" h="600px" overflow="scroll">
               {selectedmusicJSX}
 
-              <Table>
-                <Tbody>
-                  {!selectedmusicJSX &&
-                    searchResults.map((r) => handleMapSearchResult(r))}
-                </Tbody>
-              </Table>
+              {!selectedmusicJSX &&
+                searchResults.map((r) => handleMapSearchResult(r))}
             </Box>
           </VStack>
         </WrapItem>
