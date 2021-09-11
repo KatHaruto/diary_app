@@ -1116,6 +1116,11 @@
   "resolved" "https://registry.npmjs.org/@sqltools/formatter/-/formatter-1.2.3.tgz"
   "version" "1.2.3"
 
+"@types/autosize@^4.0.0":
+  "integrity" "sha512-FIEyxf173EjECl5xxib+pCLzmyxGJKyb971QJD8xftrEUdmb5U4K4Ym8H0V/TPT4ZEwtoQC1oC6o0enVvVelKQ=="
+  "resolved" "https://registry.npmjs.org/@types/autosize/-/autosize-4.0.0.tgz"
+  "version" "4.0.0"
+
 "@types/debug@^4.0.0":
   "integrity" "sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg=="
   "resolved" "https://registry.npmjs.org/@types/debug/-/debug-4.1.7.tgz"
@@ -1472,6 +1477,11 @@
   "integrity" "sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ=="
   "resolved" "https://registry.npmjs.org/astral-regex/-/astral-regex-2.0.0.tgz"
   "version" "2.0.0"
+
+"autosize@^5.0.1":
+  "integrity" "sha512-UIWUlE4TOVPNNj2jjrU39wI4hEYbneUypEqcyRmRFIx5CC2gNdg3rQr+Zh7/3h6egbBvm33TDQjNQKtj9Tk1HA=="
+  "resolved" "https://registry.npmjs.org/autosize/-/autosize-5.0.1.tgz"
+  "version" "5.0.1"
 
 "available-typed-arrays@^1.0.5":
   "integrity" "sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw=="
@@ -4533,6 +4543,15 @@
     "invariant" "^2.2.4"
     "tslib" "^1.0.0"
 
+"react-textarea-autosize@^8.3.3":
+  "integrity" "sha512-2XlHXK2TDxS6vbQaoPbMOfQ8GK7+irc2fVK6QFIcC8GOnH3zI/v481n+j1L0WaPVvKxwesnY93fEfH++sus2rQ=="
+  "resolved" "https://registry.npmjs.org/react-textarea-autosize/-/react-textarea-autosize-8.3.3.tgz"
+  "version" "8.3.3"
+  dependencies:
+    "@babel/runtime" "^7.10.2"
+    "use-composed-ref" "^1.0.0"
+    "use-latest" "^1.0.0"
+
 "react-universal-interface@^0.6.2":
   "integrity" "sha512-dg8yXdcQmvgR13RIlZbTRQOoUrDciFVoSBZILwjE2LFISxZZ8loVJKAkuzswl5js8BHda79bIb2b84ehU8IjXw=="
   "resolved" "https://registry.npmjs.org/react-universal-interface/-/react-universal-interface-0.6.2.tgz"
@@ -5287,6 +5306,11 @@
   "resolved" "https://registry.npmjs.org/ts-easing/-/ts-easing-0.2.0.tgz"
   "version" "0.2.0"
 
+"ts-essentials@^2.0.3":
+  "integrity" "sha512-3IVX4nI6B5cc31/GFFE+i8ey/N2eA0CZDbo6n0yrz0zDX8ZJ8djmU1p+XRz7G3is0F3bB3pu2pAroFdAWQKU3w=="
+  "resolved" "https://registry.npmjs.org/ts-essentials/-/ts-essentials-2.0.12.tgz"
+  "version" "2.0.12"
+
 "ts-pnp@^1.1.6":
   "integrity" "sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw=="
   "resolved" "https://registry.npmjs.org/ts-pnp/-/ts-pnp-1.2.0.tgz"
@@ -5489,6 +5513,25 @@
   "integrity" "sha512-gN3vgMISAgacF7sqsLPByqoePooY3n2emTH59Ur5d/M8eg4WTWu1xp8i8DHjohftIyEx0S08RiYxbffr4j8Peg=="
   "resolved" "https://registry.npmjs.org/use-callback-ref/-/use-callback-ref-1.2.5.tgz"
   "version" "1.2.5"
+
+"use-composed-ref@^1.0.0":
+  "integrity" "sha512-my1lNHGWsSDAhhVAT4MKs6IjBUtG6ZG11uUqexPH9PptiIZDQOzaF4f5tEbJ2+7qvNbtXNBbU3SfmN+fXlWDhg=="
+  "resolved" "https://registry.npmjs.org/use-composed-ref/-/use-composed-ref-1.1.0.tgz"
+  "version" "1.1.0"
+  dependencies:
+    "ts-essentials" "^2.0.3"
+
+"use-isomorphic-layout-effect@^1.0.0":
+  "integrity" "sha512-L7Evj8FGcwo/wpbv/qvSfrkHFtOpCzvM5yl2KVyDJoylVuSvzphiiasmjgQPttIGBAy2WKiBNR98q8w7PiNgKQ=="
+  "resolved" "https://registry.npmjs.org/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.1.tgz"
+  "version" "1.1.1"
+
+"use-latest@^1.0.0":
+  "integrity" "sha512-d2TEuG6nSLKQLAfW3By8mKr8HurOlTkul0sOpxbClIv4SQ4iOd7BYr7VIzdbktUCnv7dua/60xzd8igMU6jmyw=="
+  "resolved" "https://registry.npmjs.org/use-latest/-/use-latest-1.2.0.tgz"
+  "version" "1.2.0"
+  dependencies:
+    "use-isomorphic-layout-effect" "^1.0.0"
 
 "use-sidecar@^1.0.1":
   "integrity" "sha512-k9jnrjYNwN6xYLj1iaGhonDghfvmeTmYjAiGvOr7clwKfPjMXJf4/HOr7oT5tJwYafgp2tG2l3eZEOfoELiMcA=="

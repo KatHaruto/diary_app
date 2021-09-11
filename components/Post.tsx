@@ -58,10 +58,11 @@ const calcHowLongAgo = (dateString: string) => {
 const Post: React.FC<{ post: PostProps }> = ({ post }) => {
   return (
     <Box maxW="250px" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Link href={`/p/${encodeURIComponent(post.id)}`}>
-        <Image width="250px" height="250px" src={post.music.imageUrl} />
-      </Link>
-
+      <Box cursor="pointer">
+        <Link href={`/p/${encodeURIComponent(post.id)}`}>
+          <Image width="250px" height="250px" src={post.music.imageUrl} />
+        </Link>
+      </Box>
       <Box p="6">
         <Box d="flex" alignItems="baseline">
           <Box
