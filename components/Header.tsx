@@ -57,17 +57,64 @@ const Header: React.FC = () => {
   }
   if (!session) {
     return (
-      <div className="right">
-        <Box>
-          <Link href="/api/auth/signin">
-            <a>
-              <Button size="md" colorScheme="blue" mt="24px">
-                Log in
-              </Button>
-            </a>
-          </Link>
+      <>
+        <Box px={4}>
+          <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+            <IconButton
+              size={"md"}
+              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+              aria-label={"Open Menu"}
+              display={{ md: "none" }}
+              onClick={isOpen ? onClose : onOpen}
+            />
+            <HStack spacing={8} alignItems={"center"}>
+              <Box fontWeight="semibold">Logo</Box>
+              <HStack
+                as={"nav"}
+                spacing={4}
+                display={{ base: "none", md: "flex" }}
+              >
+                {Links.map((link) => (
+                  <NavLink key={link.name} name={link.name} a={link.a} />
+                ))}
+              </HStack>
+            </HStack>
+            <HStack spacing={{ base: "3", md: "6" }}>
+              <IconButton
+                mr="-2"
+                size="lg"
+                variant="ghost"
+                aria-label="Search database"
+                color="gray"
+                colorScheme="whiteAlpha"
+                icon={<SearchIcon />}
+              />
+              <Link href="/api/auth/signin">
+                <a>
+                  <Button
+                    variant={"solid"}
+                    colorScheme={"teal"}
+                    size={"sm"}
+                    leftIcon={<AddIcon />}
+                  >
+                    Log in
+                  </Button>
+                </a>
+              </Link>
+            </HStack>
+          </Flex>
+
+          {isOpen ? (
+            <Box pb={4} display={{ md: "none" }}>
+              <Stack as={"nav"} spacing={4}>
+                {Links.map((link) => (
+                  <NavLink key={link.name} name={link.name} a={link.a} />
+                ))}
+              </Stack>
+            </Box>
+          ) : null}
         </Box>
-      </div>
+      </>
     );
   }
 
