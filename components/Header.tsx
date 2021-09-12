@@ -56,7 +56,19 @@ const Header: React.FC = () => {
     return null;
   }
   if (!session) {
-    return null;
+    return (
+      <div className="right">
+        <Box>
+          <Link href="/api/auth/signin">
+            <a>
+              <Button size="md" colorScheme="blue" mt="24px">
+                Log in
+              </Button>
+            </a>
+          </Link>
+        </Box>
+      </div>
+    );
   }
 
   return (
@@ -145,128 +157,4 @@ const Header: React.FC = () => {
   );
 };
 
-////////////////////////////
-/*
-const Header: React.FC = () => {
-  const router = useRouter();
-  const [session, loading] = useSession();
-  const isActive: (pathname: string) => boolean = (pathname) =>
-    router.pathname === pathname;
-
-  const left = (
-    <Flex align="center" mr={5} color="black">
-      <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-        <Link href="/">
-          <Text>App</Text>
-        </Link>
-      </Heading>
-    </Flex>
-  );
-
-  let right = null;
-
-  if (loading) {
-    right = (
-      <Box>
-        <Text>Validating session ...</Text>
-      </Box>
-    );
-  }
-
-  if (!session) {
-    right = (
-      <Box>
-        <Link href="/api/auth/signin">
-          <a>
-            <Button size="md" colorScheme="blue" mt="24px">
-              Log in
-            </Button>
-          </a>
-        </Link>
-      </Box>
-    );
-  }
-
-  if (session) {
-    //Switching Hstack to Flex because error could not be resolved.
-    //https://github.com/chakra-ui/chakra-ui/issues/3173
-    right = (
-      <Stack
-        flex={{ base: 1, md: 0 }}
-        justify={"flex-end"}
-        direction={"row"}
-        spacing={6}
-      >
-        <IconButton
-          mr="-3%"
-          size="lg"
-          aria-label="Search database"
-          color="gray"
-          colorScheme="whiteAlpha"
-          icon={<SearchIcon />}
-        />
-        <Menu isLazy id="header">
-          <MenuButton aria-label="Options" variant="outline">
-            <Avatar
-              ml="-3%"
-              name="profile"
-              size="sm"
-              src={session.user.image}
-            />
-          </MenuButton>
-
-          <MenuList color="black">
-            <MenuItem>{session.user.name}</MenuItem>
-            <MenuDivider />
-            <MenuItemOption
-              icon={<RiArticleLine />}
-              id="header_list_icon"
-              onClick={() => {
-                router.push("/posts");
-              }}
-            >
-              My Post
-            </MenuItemOption>
-            <MenuItemOption
-              icon={<RiLogoutBoxRLine />}
-              onClick={() => signOut()}
-            >
-              Log Out
-            </MenuItemOption>
-          </MenuList>
-        </Menu>
-
-        {router.pathname !== "/create" ? (
-          <Link href="/create">
-            <a>
-              <Button size="sm" colorScheme="blue">
-                New post
-              </Button>
-            </a>
-          </Link>
-        ) : (
-          ""
-        )}
-      </Stack>
-    );
-  }
-
-  return (
-    <Box>
-      <Flex
-        as="nav"
-        align="center"
-        justify="space-between"
-        wrap="wrap"
-        my="5%"
-        mx="3%"
-        color="white"
-      >
-        {left}
-        {right}
-      </Flex>
-    </Box>
-  );
-};
-*/
 export default Header;

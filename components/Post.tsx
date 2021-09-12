@@ -75,7 +75,7 @@ const Post: React.FC<{ post: PostProps }> = ({ post }) => {
       >
         <Link href={`/p/${encodeURIComponent(post.id)}`}>
           <a>
-            <Image layout="fill" src={post.music.imageUrl} />
+            <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
           </a>
         </Link>
       </Box>
