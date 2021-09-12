@@ -104,7 +104,11 @@ const Post: React.FC<PostProps> = (props) => {
               width={["200px", "400px"]}
               height={["200px", "400px"]}
             >
-              <Image layout="fill" src={props.music.imageUrl} />
+              <Image
+                layout="fill"
+                src={props.music.imageUrl}
+                alt="No ArtWork"
+              />
             </Box>
             <StackDivider borderColor="gray.200" />
             <Box
@@ -146,7 +150,7 @@ const Post: React.FC<PostProps> = (props) => {
                 overflowWrap="break-word"
               >
                 {props.isMarkDown ? (
-                  <ReactMarkdown children={props.content} />
+                  <ReactMarkdown>{props.content}</ReactMarkdown>
                 ) : (
                   <Text whiteSpace="pre-wrap">{props.content}</Text>
                 )}

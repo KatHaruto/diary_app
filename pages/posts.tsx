@@ -61,7 +61,7 @@ type sortType = {
   key: string;
   order: number;
 };
-const posts: React.FC<{ posts: PostProps[] }> = (props) => {
+const Posts: React.FC<{ posts: PostProps[] }> = (props) => {
   const [session] = useSession();
 
   const [sort, setSort] = useState<sortType>({ key: "", order: 0 });
@@ -129,4 +129,4 @@ const posts: React.FC<{ posts: PostProps[] }> = (props) => {
   );
 };
 
-export default posts;
+export default Posts;

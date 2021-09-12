@@ -84,6 +84,7 @@ const Draft: React.FC = () => {
             <Box position="relative" height="100px" width="100px">
               <Image
                 src={music.album.images[0].url}
+                alt="No ArtWork"
                 layout={"fill"}
                 onError={(e) => {
                   e.currentTarget.src = NotFoundImage.src;
@@ -164,6 +165,7 @@ const Draft: React.FC = () => {
         >
           <Image
             src={src}
+            alt="No ArtWork"
             layout={"fill"}
             onError={(e) => {
               e.currentTarget.src = NotFoundImage.src;
