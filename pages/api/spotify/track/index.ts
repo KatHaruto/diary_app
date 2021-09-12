@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const spotifyAPI = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    redirectUri: "https://diary-app-six.vercel.app/api/authorize",
+    redirectUri: "https://diary-app-six.vercel.app/api/auth/authorize",
   });
   const access_token = (await spotifyAPI.getTemporaryAppTokens()).access_token;
   spotifyAPI.setAccessToken(access_token);
