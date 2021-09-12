@@ -35,7 +35,7 @@ export type PostProps = {
 
 const calcHowLongAgo = (dateString: string) => {
   const now = new Date();
-  now.setHours(now.getHours() + 9);
+  now.setHours(now.getHours());
   const diff = now.getTime() - new Date(dateString).getTime();
   if (Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) >= 1) {
     return Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) + "年前";
