@@ -5,7 +5,7 @@ import prisma from "../../../lib/prisma";
 // Required fields in body: title
 // Optional fields in body: content
 const handle = async (req, res) => {
-  const { title, content, published, song } = req.body;
+  const { title, content, isMarkDown, published, song } = req.body;
 
   const songExist =
     (await prisma.music.findUnique({
@@ -36,6 +36,7 @@ const handle = async (req, res) => {
     data: {
       title: title,
       content: content,
+      isMarkDown: isMarkDown,
       published: published,
       createdAt: new Date(
         Date.now() - new Date().getTimezoneOffset() * 1000 * 60

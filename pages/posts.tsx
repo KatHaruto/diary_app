@@ -14,6 +14,11 @@ import {
   SimpleGrid,
   Wrap,
   WrapItem,
+  Box,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -73,15 +78,11 @@ const posts: React.FC<{ posts: PostProps[] }> = (props) => {
     return tmp_posts;
   }, [sort]);
 
-  const handlesort = (column: string) => {
-    if (sort.key === column) {
-      setSort({ ...sort, order: -sort.order });
-    } else {
-      setSort({
-        key: column,
-        order: 1,
-      });
-    }
+  const handlesort = (column: string, order: number) => {
+    setSort({
+      key: column,
+      order: order,
+    });
   };
 
   if (!session) {
@@ -95,18 +96,29 @@ const posts: React.FC<{ posts: PostProps[] }> = (props) => {
 
   return (
     <Layout>
-      <Table size="md">
-        <Thead>
-          <Tr>
-            <Th onClick={() => handlesort("createdAt")}>
-              Created{sort.order > 0 ? " ▲" : " ▼"}
-            </Th>
-          </Tr>
-        </Thead>
-      </Table>
+      <Flex>
+        <Flex justify="center" m="3%" fontWeight="semibold" fontSize="28px">
+          My Posts
+        </Flex>
+        <Menu isLazy id={"sort_menu_id"}>
+          <MenuButton color="black">
+            {sort.order > 0 ? "Oldest" : "Latest"}
+          </MenuButton>
+          <MenuList id="sort_list">
+            <MenuItem
+              value="latest"
+              onClick={() => handlesort("createdAt", -1)}
+            >
+              Latest
+            </MenuItem>
+            <MenuItem value="oldest" onClick={() => handlesort("createdAt", 1)}>
+              Oldest
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </Flex>
 
-      <Text fontSize="lg">My Posts</Text>
-      <Wrap mx="10%" spacing="10%" justify="center">
+      <Wrap mx={["5%", "10%"]} spacing={["5%", "10%"]} justify="center">
         {props.posts.map((post) => (
           <WrapItem key={post.id} overflow="hidden">
             <Post post={post} />

@@ -1,10 +1,16 @@
 import {
+  Avatar,
   Box,
   HStack,
   Link as CLink,
   Spacer,
   StackDivider,
   VStack,
+  Wrap,
+  WrapItem,
+  Text,
+  Flex,
+  Button,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/client";
@@ -18,6 +24,7 @@ import prisma from "../../lib/prisma";
 
 import { Image as CImage } from "@chakra-ui/image";
 import Image from "next/image";
+import { destroy } from "autosize";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   let post = await prisma.post.findUnique({
@@ -26,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     },
     include: {
       author: {
-        select: { name: true, email: true },
+        select: { name: true, email: true, image: true },
       },
       music: {
         select: {
@@ -68,6 +75,14 @@ async function deletePost(id: number): Promise<void> {
   //await Router.push("/");
 }
 
+const ConvertToYearMonDay = (d: string) => {
+  const date = new Date(d);
+  const y = date.getFullYear();
+  const m = ("00" + (date.getMonth() + 1)).slice(-2);
+  const da = ("00" + date.getDate()).slice(-2);
+  return y + "/" + m + "/" + da;
+};
+
 const Post: React.FC<PostProps> = (props) => {
   const [session, loading] = useSession();
   if (loading) {
@@ -77,44 +92,21 @@ const Post: React.FC<PostProps> = (props) => {
   const postBelongsToUser = session?.user?.email === props.author?.email;
   let title = props.title;
   if (!props.published) {
-    title = `${title} (Draft)`;
+    title = `${title} (下書き)`;
   }
-
   return (
     <Layout>
-      <HStack spacing="24px" mt="10%">
-        <VStack
-          divider={<StackDivider borderColor="gray.200" />}
-          spacing={4}
-          align="center"
-          mx="10%"
-        >
-          <Box>
-            <Image width="400px" height="400px" src={props.music.imageUrl} />
-          </Box>
-          <Box></Box>
-
-          <iframe
-            width="100%"
-            height="150"
-            src={`https://embed.odesli.co/?url=spotify:track:${props.music.songId}&theme=light`}
-            frameBorder="0"
-            allowTransparency
-            allowFullScreen
-            sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
-          ></iframe>
-        </VStack>
-        <VStack>
-          <Box
-            mt="1"
-            fontWeight="semibold"
-            as="h4"
-            lineHeight="tight"
-            isTruncated
-          >
-            {props.title}
-          </Box>
-          <Box d="flex" alignItems="baseline">
+      <Wrap justify="center" mt="3%" spacing="10%">
+        <WrapItem>
+          <VStack spacing={4} align="center">
+            <Box
+              position="relative"
+              width={["200px", "400px"]}
+              height={["200px", "400px"]}
+            >
+              <Image layout="fill" src={props.music.imageUrl} />
+            </Box>
+            <StackDivider borderColor="gray.200" />
             <Box
               color="gray.500"
               fontWeight="semibold"
@@ -123,28 +115,72 @@ const Post: React.FC<PostProps> = (props) => {
               textTransform="uppercase"
               isTruncated
             >
-              {props.music.songName} / {props.music.artistName[0]}
+              {props.music.artistName} / {props.music.songName}
             </Box>
-          </Box>
-
-          <Box d="flex" mt="2" align-items="center">
-            <Spacer />
-            <Box as="span" color="gray.600" fontSize="sm">
-              {props.createdAt}
+            <iframe
+              width="100%"
+              height="30%"
+              src={
+                "https://embed.odesli.co/?" +
+                new URLSearchParams({
+                  url: props.music.songId,
+                  theme: "light",
+                }).toString()
+              }
+            ></iframe>
+            <iframe
+              src={"https://open.spotify.com/embed/track/" + props.music.songId}
+              width="90%"
+              height="80px"
+            ></iframe>
+          </VStack>
+        </WrapItem>
+        <WrapItem>
+          <VStack>
+            <Box maxW={["300px", "500px"]} minW={["300px", "500px"]}>
+              <Text fontWeight="semibold" fontSize="24px">
+                {props.title}
+              </Text>
+              <Box
+                minH={["50px", "50px", "50px", "415px"]}
+                overflowWrap="break-word"
+              >
+                {props.isMarkDown ? (
+                  <ReactMarkdown children={props.content} />
+                ) : (
+                  <Text whiteSpace="pre-wrap">{props.content}</Text>
+                )}
+              </Box>
+              <Flex>
+                <HStack
+                  marginTop="2"
+                  spacing="2"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Avatar size={"sm"} src={props.author.image} />
+                  <Text>
+                    {props.author.name +
+                      " - " +
+                      ConvertToYearMonDay(props.createdAt)}
+                  </Text>
+                </HStack>
+                <Spacer />
+                {!props.published &&
+                  userHasValidSession &&
+                  postBelongsToUser && (
+                    <Button onClick={() => publishPost(props.id)}>
+                      Publish
+                    </Button>
+                  )}
+                {userHasValidSession && postBelongsToUser && (
+                  <Button onClick={() => deletePost(props.id)}>Delete</Button>
+                )}
+              </Flex>
             </Box>
-          </Box>
-          <Box>
-            <p>By {props?.author?.name || "Unknown author"}</p>
-            <ReactMarkdown children={props.content} />
-            {!props.published && userHasValidSession && postBelongsToUser && (
-              <button onClick={() => publishPost(props.id)}>Publish</button>
-            )}
-            {userHasValidSession && postBelongsToUser && (
-              <button onClick={() => deletePost(props.id)}>Delete</button>
-            )}
-          </Box>
-        </VStack>
-      </HStack>
+          </VStack>
+        </WrapItem>
+      </Wrap>
     </Layout>
   );
 };

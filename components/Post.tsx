@@ -10,12 +10,14 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import Image from "next/image";
+import { forwardRef } from "react";
 export type PostProps = {
   id: number;
   title: string;
   author: {
     name: string;
     email: string;
+    image: string;
   } | null;
   music: {
     songId: string;
@@ -27,6 +29,7 @@ export type PostProps = {
   };
   content: string;
   published: boolean;
+  isMarkDown: boolean;
   createdAt: string;
 };
 
@@ -55,12 +58,25 @@ const calcHowLongAgo = (dateString: string) => {
 
   return "今";
 };
+
 const Post: React.FC<{ post: PostProps }> = ({ post }) => {
   return (
-    <Box maxW="250px" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Box cursor="pointer">
+    <Box
+      maxW={["150px", "250px"]}
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+    >
+      <Box
+        position="relative"
+        width={["150px", "250px"]}
+        height={["150px", "250px"]}
+        cursor="pointer"
+      >
         <Link href={`/p/${encodeURIComponent(post.id)}`}>
-          <Image width="250px" height="250px" src={post.music.imageUrl} />
+          <a>
+            <Image layout="fill" src={post.music.imageUrl} />
+          </a>
         </Link>
       </Box>
       <Box p="6">

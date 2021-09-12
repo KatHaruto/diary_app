@@ -27,6 +27,7 @@ import {
   MenuOptionGroup,
   Text,
   Heading,
+  MenuItem,
 } from "@chakra-ui/react";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
@@ -38,7 +39,7 @@ export const getStaticProps: GetStaticProps = async () => {
     where: { published: true },
     include: {
       author: {
-        select: { name: true },
+        select: { name: true, email: true, image: true },
       },
       music: {
         select: {
@@ -83,50 +84,32 @@ const Blog: React.FC<{ feed: PostProps[] }> = (props) => {
       order: order,
     });
   };
-
-  const Links = ["Feeds", "MyPost"];
-  const NavLink = ({ children }: { children: ReactNode }) => (
-    <NextLink href={"#"}>
-      <CLink
-        px={2}
-        py={1}
-        rounded={"md"}
-        _hover={{
-          textDecoration: "none",
-          bg: useColorModeValue("gray.200", "gray.700"),
-        }}
-      >
-        {children}
-      </CLink>
-    </NextLink>
-  );
-
+  //<Menu  isLazy id=<hoge>>
+  //Menu is explicitly needed to set id
   return (
     <Layout>
       <Flex>
-        <Menu>
+        <Flex justify="center" m="3%" fontWeight="semibold" fontSize="28px">
+          Public Posts
+        </Flex>
+        <Menu isLazy id={"sort_menu_id"}>
           <MenuButton color="black">
             {sort.order > 0 ? "Oldest" : "Latest"}
           </MenuButton>
-          <MenuList>
-            <MenuOptionGroup defaultValue="latest" type="radio">
-              <MenuItemOption
-                value="latest"
-                onClick={() => handlesort("createdAt", -1)}
-              >
-                Latest
-              </MenuItemOption>
-              <MenuItemOption
-                value="oldest"
-                onClick={() => handlesort("createdAt", 1)}
-              >
-                Oldest
-              </MenuItemOption>
-            </MenuOptionGroup>
+          <MenuList id="sort_list">
+            <MenuItem
+              value="latest"
+              onClick={() => handlesort("createdAt", -1)}
+            >
+              Latest
+            </MenuItem>
+            <MenuItem value="oldest" onClick={() => handlesort("createdAt", 1)}>
+              Oldest
+            </MenuItem>
           </MenuList>
         </Menu>
       </Flex>
-      <Wrap mx="10%" spacing="10%" justify="center">
+      <Wrap mx={["5%", "10%"]} spacing={["5%", "10%"]} justify="center">
         {props.feed.map((post) => (
           <WrapItem key={post.id} overflow="hidden">
             <Post post={post} />

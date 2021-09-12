@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Layout from "../components/Layout";
 import Router from "next/router";
 import Image from "next/image";
@@ -24,6 +30,9 @@ import {
   WrapItem,
   Wrap,
   Textarea,
+  Switch,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 
@@ -32,12 +41,14 @@ const convertMillisToMinutesAndSecret = (millis: number) => {
   const seconds = Number(((millis % 60000) / 1000).toFixed(0));
   return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
 };
+
 const Draft: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [published, setPublished] = useState<Boolean>(false);
   const [music, setMusic] = useState<Track>(null);
-
+  //const [isMarkDown, ToggleIsMarkDown] = useToggle();
+  const [isMarkDown, setIsMarkDown] = useState(false);
   const [searchWord, setSearchWord] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
 
@@ -124,7 +135,7 @@ const Draft: React.FC = () => {
         spotify_url: spotify_url,
       };
 
-      const body = { title, content, published, song };
+      const body = { title, content, isMarkDown, published, song };
       await fetch("/api/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -146,7 +157,11 @@ const Draft: React.FC = () => {
 
     return (
       <Flex onClick={() => handleSelectMusic(r)} key={r.id} m="1">
-        <Box position="relative" height="100px" width="100px">
+        <Box
+          position="relative"
+          height={["60px", "100px"]}
+          width={["60px", "100px"]}
+        >
           <Image
             src={src}
             layout={"fill"}
@@ -155,7 +170,13 @@ const Draft: React.FC = () => {
             }}
           />
         </Box>
-        <Box pl="3" isTruncated width="300px">
+        <Box
+          minW={["140px", "300px"]}
+          maxW={["140px", "300px"]}
+          pl="3"
+          isTruncated
+          overflow="scroll"
+        >
           <Text fontWeight="semibold" fontSize="sm">
             {r.name}
           </Text>
@@ -191,10 +212,10 @@ const Draft: React.FC = () => {
 
   return (
     <Layout>
-      <Wrap spacing="20%" mx="3%" my="10%" justify="center">
-        <WrapItem>
-          <VStack divider={<StackDivider borderColor="gray.200" />} spacing={4}>
-            <Box w="400px">
+      <VStack justify="center" mt="3%" spacing={["0%", "10%"]}>
+        <Box width={["200px", "400px"]}>
+          <VStack>
+            <Box position="relative" minW={["200px", "400px"]}>
               <Input
                 value={searchWord}
                 onChange={(e) => {
@@ -203,59 +224,81 @@ const Draft: React.FC = () => {
                 placeholder="search"
               />
             </Box>
-            <Box w="400px" h="600px" overflow="scroll">
+            <Box maxW={["300px", "400px"]} maxH="500px" overflow="scroll">
               {selectedmusicJSX}
 
               {!selectedmusicJSX &&
                 searchResults.map((r) => handleMapSearchResult(r))}
             </Box>
           </VStack>
-        </WrapItem>
-        <WrapItem>
+        </Box>
+        <Box width={["350px", "400px", "500px", "600px"]}>
           <form onSubmit={submitData}>
-            <VStack>
-              <Box fontWeight="semibold" lineHeight="tight" isTruncated>
-                New Draft
-              </Box>
-              <Box>
+            <Box mx="3%">
+              <VStack spacing="10px">
+                <Box
+                  mr="auto"
+                  ml="auto"
+                  fontWeight="semibold"
+                  lineHeight="tight"
+                  isTruncated
+                >
+                  新しい投稿
+                </Box>
                 <Input
+                  fontSize="xl"
+                  fontWeight="semibold"
                   autoFocus
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Title"
                   variant="flushed"
                   value={title}
+                  cols={60}
                 />
-              </Box>
-              <Box>
+                <FormControl display="flex" alignItems="center">
+                  <FormLabel htmlFor="is_markdown" mb="0">
+                    MarkDown (still implementing...)
+                  </FormLabel>
+                  <Switch
+                    isDisabled
+                    onChange={() => setIsMarkDown(!isMarkDown)}
+                    id="is_markdown"
+                    colorScheme="teal"
+                  />
+                </FormControl>
+
                 <Textarea
                   variant="flushed"
                   ref={ref}
+                  rows={10}
+                  cols={60}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="content"
+                  overflowWrap="break-word"
                 />
-              </Box>
-              <Box>
-                <Input
-                  disabled={!content || !title}
-                  type="submit"
-                  value="投稿"
-                  onClick={() => setPublished(true)}
-                />
-              </Box>
-              <Box>
-                <Input
-                  disabled={!content || !title}
-                  type="submit"
-                  value="下書き"
-                />
-                <a className="back" href="#" onClick={() => Router.back()}>
-                  or Cancel
-                </a>
-              </Box>
-            </VStack>
+                <Box>
+                  <Input
+                    disabled={!content || !title}
+                    type="submit"
+                    value="投稿"
+                    onClick={() => setPublished(true)}
+                  />
+                </Box>
+                <Box>
+                  <Input
+                    disabled={!content || !title}
+                    type="submit"
+                    value="下書き"
+                  />
+                  <a className="back" href="#" onClick={() => Router.back()}>
+                    or Cancel
+                  </a>
+                </Box>
+              </VStack>
+            </Box>
           </form>
-        </WrapItem>
-      </Wrap>
+        </Box>
+      </VStack>
     </Layout>
   );
 };
