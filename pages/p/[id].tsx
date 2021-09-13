@@ -60,7 +60,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 };
 
 async function publishPost(id: number): Promise<void> {
-  await fetch(`http://localhost:3000/api/publish/${id}`, {
+  await fetch(`https://diary-app-six.vercel.app/api/publish/${id}`, {
     method: "PUT",
   });
 
@@ -68,7 +68,7 @@ async function publishPost(id: number): Promise<void> {
 }
 
 async function deletePost(id: number): Promise<void> {
-  await fetch(`http://localhost:3000/api/post/${id}`, {
+  await fetch(`https://diary-app-six.vercel.app/api/post/${id}`, {
     method: "DELETE",
   });
   Router.back();
@@ -121,17 +121,7 @@ const Post: React.FC<PostProps> = (props) => {
             >
               {props.music.artistName} / {props.music.songName}
             </Box>
-            <iframe
-              width="100%"
-              height="30%"
-              src={
-                "https://embed.odesli.co/?" +
-                new URLSearchParams({
-                  url: props.music.songId,
-                  theme: "light",
-                }).toString()
-              }
-            ></iframe>
+
             <iframe
               src={"https://open.spotify.com/embed/track/" + props.music.songId}
               width="90%"
@@ -190,3 +180,17 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export default Post;
+
+/**
+ * <iframe
+              width="100%"
+              height="30%"
+              src={
+                "https://embed.odesli.co/?" +
+                new URLSearchParams({
+                  url: props.music.songId,
+                  theme: "light",
+                }).toString()
+              }
+            ></iframe>
+ */
