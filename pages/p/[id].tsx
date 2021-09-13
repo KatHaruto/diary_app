@@ -139,7 +139,6 @@ const Post: React.FC<PostProps> = (props) => {
                 }).toString()
               }
               frameBorder="0"
-              allowTransparency
               allowFullScreen
               sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
             ></iframe>

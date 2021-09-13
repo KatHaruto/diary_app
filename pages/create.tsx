@@ -51,6 +51,7 @@ const Draft: React.FC = () => {
   const [isMarkDown, setIsMarkDown] = useState(false);
   const [searchWord, setSearchWord] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
+  const processing = useRef(false);
 
   const ref = useRef();
 
@@ -117,7 +118,11 @@ const Draft: React.FC = () => {
   }, [music]);
   const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+
+    if (processing.current) return;
     try {
+      processing.current = true;
+
       const album = { id: music.album.id, name: music.album.name };
       const artists = {
         id: music.artists.map((a) => a.id),
@@ -149,6 +154,8 @@ const Draft: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      processing.current = false;
     }
   };
   const handleMapSearchResult = (r: Track) => {
