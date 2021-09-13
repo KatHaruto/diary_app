@@ -7,10 +7,13 @@ import {
   Text,
   Image as CImage,
   Spacer,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import Image from "next/image";
 import { forwardRef } from "react";
+import DesktopPost from "./DesktopPost";
+import MobilePost from "./MobilePosts";
 export type PostProps = {
   id: number;
   title: string;
@@ -33,93 +36,12 @@ export type PostProps = {
   createdAt: string;
 };
 
-const calcHowLongAgo = (dateString: string) => {
-  const now = new Date();
-  now.setHours(now.getHours());
-  const diff = now.getTime() - new Date(dateString).getTime();
-  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) >= 1) {
-    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) + "年前";
-  }
-  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 30)) >= 1) {
-    return Math.floor(diff / (1000 * 60 * 60 * 24 * 30)) + "ヶ月前";
-  }
-  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) >= 1) {
-    return Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) + "週間前";
-  }
-  if (Math.floor(diff / (1000 * 60 * 60 * 24)) >= 1) {
-    return Math.floor(diff / (1000 * 60 * 60 * 24)) + "日前";
-  }
-  if (Math.floor(diff / (1000 * 60 * 60)) >= 1) {
-    return Math.floor(diff / (1000 * 60 * 60)) + "時間前";
-  }
-  if (Math.floor(diff / (1000 * 60)) >= 1) {
-    return Math.floor(diff / (1000 * 60)) + "分前";
-  }
-
-  return "今";
-};
-
 const Post: React.FC<{ post: PostProps }> = ({ post }) => {
-  return (
-    <Box
-      maxW={["150px", "250px"]}
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-    >
-      <Box
-        position="relative"
-        width={["150px", "250px"]}
-        height={["150px", "250px"]}
-        cursor="pointer"
-      >
-        <Link href={`/p/${encodeURIComponent(post.id)}`}>
-          <a>
-            <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
-          </a>
-        </Link>
-      </Box>
-      <Box p="6">
-        <Box d="flex" alignItems="baseline">
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            letterSpacing="wide"
-            fontSize="xs"
-            textTransform="uppercase"
-            isTruncated
-          >
-            {post.music.songName} / {post.music.artistName[0]}
-          </Box>
-        </Box>
-
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          isTruncated
-        >
-          {post.title}
-        </Box>
-
-        <Box d="flex" mt="2" align-items="center">
-          {post.published ? (
-            ""
-          ) : (
-            <Badge borderRadius="full" px="5px" py="3px" colorScheme="twitter">
-              {" "}
-              {"未公開"}{" "}
-            </Badge>
-          )}
-          <Spacer />
-          <Box as="span" color="gray.600" fontSize="sm">
-            {calcHowLongAgo(post.createdAt)}
-          </Box>
-        </Box>
-      </Box>
-    </Box>
-  );
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  if (isMobile) {
+    return <MobilePost post={post} />;
+  }
+  return <DesktopPost post={post} />;
 };
 
 export default Post;

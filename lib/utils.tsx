@@ -1,0 +1,25 @@
+export const calcHowLongAgo = (dateString: string) => {
+  const now = new Date();
+  now.setHours(now.getHours());
+  const diff = now.getTime() - new Date(dateString).getTime();
+  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) >= 1) {
+    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365)) + "年前";
+  }
+  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 30)) >= 1) {
+    return Math.floor(diff / (1000 * 60 * 60 * 24 * 30)) + "ヶ月前";
+  }
+  if (Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) >= 1) {
+    return Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) + "週間前";
+  }
+  if (Math.floor(diff / (1000 * 60 * 60 * 24)) >= 1) {
+    return Math.floor(diff / (1000 * 60 * 60 * 24)) + "日前";
+  }
+  if (Math.floor(diff / (1000 * 60 * 60)) >= 1) {
+    return Math.floor(diff / (1000 * 60 * 60)) + "時間前";
+  }
+  if (Math.floor(diff / (1000 * 60)) >= 1) {
+    return Math.floor(diff / (1000 * 60)) + "分前";
+  }
+
+  return "今";
+};
