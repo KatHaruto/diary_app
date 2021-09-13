@@ -257,17 +257,6 @@ const Draft: React.FC = () => {
                   value={title}
                   cols={60}
                 />
-                <FormControl display="flex" alignItems="center">
-                  <FormLabel htmlFor="is_markdown" mb="0">
-                    MarkDown (still implementing...)
-                  </FormLabel>
-                  <Switch
-                    isDisabled
-                    onChange={() => setIsMarkDown(!isMarkDown)}
-                    id="is_markdown"
-                    colorScheme="teal"
-                  />
-                </FormControl>
 
                 <Textarea
                   variant="flushed"
