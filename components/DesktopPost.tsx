@@ -1,4 +1,4 @@
-import { Box, Badge, Spacer } from "@chakra-ui/react";
+import { Box, Badge, Spacer, Avatar, HStack, Text } from "@chakra-ui/react";
 import Link from "../lib/Link";
 import React from "react";
 import Image from "next/image";
@@ -15,33 +15,34 @@ const DesktopPost: React.FC<{ post: PostProps }> = ({ post }) => {
           </a>
         </Link>
       </Box>
-      <Box p="6">
-        <Box d="flex" alignItems="baseline">
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            letterSpacing="wide"
-            fontSize="xs"
-            textTransform="uppercase"
-            isTruncated
-          >
-            {post.music.songName} / {post.music.artistName[0]}
-          </Box>
+      <Box px="6" py="3">
+        <Box fontWeight="semibold" as="h4" isTruncated>
+          {post.title}
         </Box>
 
         <Box
           mt="1"
+          color="gray.500"
           fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
+          letterSpacing="wide"
+          fontSize="xs"
+          textTransform="uppercase"
           isTruncated
         >
-          {post.title}
+          {post.music.songName} / {post.music.artistName[0]}
         </Box>
 
         <Box d="flex" mt="2" align-items="center">
           {post.published ? (
-            ""
+            <HStack
+              marginTop="1"
+              spacing="2"
+              display="flex"
+              alignItems="center"
+            >
+              <Avatar size={"xs"} src={post.author.image} />
+              <Text fontSize="xs">{post.author.name}</Text>
+            </HStack>
           ) : (
             <Badge borderRadius="full" px="5px" py="3px" colorScheme="twitter">
               {" "}
@@ -49,7 +50,7 @@ const DesktopPost: React.FC<{ post: PostProps }> = ({ post }) => {
             </Badge>
           )}
           <Spacer />
-          <Box as="span" color="gray.600" fontSize="sm">
+          <Box mt="1" as="span" color="gray.600" fontSize="sm">
             {calcHowLongAgo(post.createdAt)}
           </Box>
         </Box>

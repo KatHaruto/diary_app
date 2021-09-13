@@ -1,4 +1,12 @@
-import { Box, Badge, Spacer, Flex, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Badge,
+  Spacer,
+  Flex,
+  Text,
+  Avatar,
+  HStack,
+} from "@chakra-ui/react";
 import Link from "../lib/Link";
 import React from "react";
 import Image from "next/image";
@@ -37,7 +45,15 @@ const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
 
         <Flex mt="2" align-items="center">
           {post.published ? (
-            ""
+            <HStack
+              marginTop="1"
+              spacing="2"
+              display="flex"
+              alignItems="center"
+            >
+              <Avatar size={"xs"} src={post.author.image} />
+              <Text fontSize="xs">{post.author.name}</Text>
+            </HStack>
           ) : (
             <Badge borderRadius="full" px="5px" py="3px" colorScheme="twitter">
               {" "}
@@ -45,7 +61,7 @@ const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
             </Badge>
           )}
           <Spacer />
-          <Box as="span" color="gray.600" fontSize="sm">
+          <Box mt="1" as="span" color="gray.600" fontSize="sm">
             {calcHowLongAgo(post.createdAt)}
           </Box>
         </Flex>
