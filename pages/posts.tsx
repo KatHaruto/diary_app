@@ -97,11 +97,16 @@ const Posts: React.FC<{ posts: PostProps[] }> = (props) => {
   return (
     <Layout>
       <Flex>
-        <Flex justify="center" m="3%" fontWeight="semibold" fontSize="28px">
+        <Flex
+          justify="center"
+          m="3%"
+          fontWeight="semibold"
+          fontSize={["20px", "28px"]}
+        >
           My Posts
         </Flex>
         <Menu isLazy id={"sort_menu_id"}>
-          <MenuButton color="black">
+          <MenuButton color="black" fontSize={["xs", "sm"]}>
             {sort.order > 0 ? "Oldest" : "Latest"}
           </MenuButton>
           <MenuList id="sort_list">

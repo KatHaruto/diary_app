@@ -1,4 +1,4 @@
-import { Box, Badge, Spacer, Flex } from "@chakra-ui/react";
+import { Box, Badge, Spacer, Flex, Text } from "@chakra-ui/react";
 import Link from "../lib/Link";
 import React from "react";
 import Image from "next/image";
@@ -12,33 +12,30 @@ import { calcHowLongAgo } from "../lib/utils";
 const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
   // TODO! set a link to apple music from mobile by using songlink api!
   return (
-    <Flex key={post.id} m="1">
-      <Box position="relative" height="60px" width="60px">
+    <Flex key={post.id} m="1" mt="5">
+      <Box position="relative" height="80px" width="80px">
         <Link href={`/p/${encodeURIComponent(post.id)}`}>
           <a>
             <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
           </a>
         </Link>
       </Box>
-      <Box px="6">
-        <Box fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
+      <Box px="6" minW="250px" maxW="250px" isTruncated>
+        <Text fontWeight="semibold" as="h4" lineHeight="tight" isTruncated>
           {post.title}
-        </Box>
+        </Text>
 
-        <Box d="flex" alignItems="baseline">
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            letterSpacing="wide"
-            fontSize="xs"
-            textTransform="uppercase"
-            isTruncated
-          >
-            {post.music.songName} / {post.music.artistName[0]}
-          </Box>
-        </Box>
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          letterSpacing="wide"
+          fontSize="xs"
+          isTruncated
+        >
+          {post.music.songName} / {post.music.artistName[0]}
+        </Text>
 
-        <Box d="flex" mt="2" align-items="center">
+        <Flex mt="2" align-items="center">
           {post.published ? (
             ""
           ) : (
@@ -51,7 +48,7 @@ const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
           <Box as="span" color="gray.600" fontSize="sm">
             {calcHowLongAgo(post.createdAt)}
           </Box>
-        </Box>
+        </Flex>
       </Box>
     </Flex>
   );
