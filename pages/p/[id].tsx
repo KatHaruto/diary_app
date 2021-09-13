@@ -109,9 +109,6 @@ const Post: React.FC<PostProps> = (props) => {
   const [session, loading] = useSession();
   const [ap_link, setAp_link] = useState(null);
 
-  if (loading) {
-    return <div>Authenticating ...</div>;
-  }
   const isMobile = useBreakpointValue({ base: true, md: false });
   const userHasValidSession = Boolean(session);
   const postBelongsToUser = session?.user?.email === props.author?.email;
@@ -126,6 +123,9 @@ const Post: React.FC<PostProps> = (props) => {
     })();
   }, []);
 
+  if (loading) {
+    return <div>Authenticating ...</div>;
+  }
   return (
     <Layout>
       <Wrap justify="center" mt="3%" spacing="10%">
