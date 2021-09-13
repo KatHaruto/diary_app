@@ -35,12 +35,7 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
-
-const convertMillisToMinutesAndSecret = (millis: number) => {
-  const minutes = Math.floor(millis / 60000);
-  const seconds = Number(((millis % 60000) / 1000).toFixed(0));
-  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-};
+import { convertMillisToMinutesAndSecret } from "../lib/utils";
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState<string>("");
@@ -123,22 +118,18 @@ const Draft: React.FC = () => {
     try {
       processing.current = true;
 
-      const album = { id: music.album.id, name: music.album.name };
-      const artists = {
-        id: music.artists.map((a) => a.id),
-        name: music.artists.map((a) => a.name),
-      };
-      const url = music.album.images.length
-        ? music.album.images[0].url
-        : NotFoundImage.src;
-      const spotify_url = music.external_urls.spotify;
       const song = {
         id: music.id,
         name: music.name,
-        album: album,
-        artists: artists,
-        image_url: url,
-        spotify_url: spotify_url,
+        album: { id: music.album.id, name: music.album.name },
+        artists: {
+          id: music.artists.map((a) => a.id),
+          name: music.artists.map((a) => a.name),
+        },
+        image_url: music.album.images.length
+          ? music.album.images[0].url
+          : NotFoundImage.src,
+        spotify_url: music.external_urls.spotify,
       };
 
       const body = { title, content, isMarkDown, published, song };
@@ -274,24 +265,34 @@ const Draft: React.FC = () => {
                   placeholder="content"
                   overflowWrap="break-word"
                 />
-                <Box>
-                  <Input
+                <Flex>
+                  <FormControl display="flex" alignItems="center">
+                    <FormLabel htmlFor="is_published" mb="0">
+                      <Box
+                        fontSize="sm"
+                        fontWeight="semibold"
+                        opacity={published ? 1 : 0.5}
+                      >
+                        公開する
+                      </Box>
+                    </FormLabel>
+                    <Switch
+                      id="is_published"
+                      onChange={() => {
+                        setPublished((v) => !v);
+                      }}
+                    />
+                  </FormControl>
+                  <Button
                     disabled={!content || !title}
+                    colorScheme="teal"
                     type="submit"
-                    value="投稿"
-                    onClick={() => setPublished(true)}
-                  />
-                </Box>
-                <Box>
-                  <Input
-                    disabled={!content || !title}
-                    type="submit"
-                    value="下書き"
-                  />
-                  <a className="back" href="#" onClick={() => Router.back()}>
-                    or Cancel
-                  </a>
-                </Box>
+                    minW="130px"
+                    mx="3"
+                  >
+                    {published ? "公開" : "下書き保存"}
+                  </Button>
+                </Flex>
               </VStack>
             </Box>
           </form>

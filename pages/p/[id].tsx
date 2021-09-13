@@ -11,12 +11,13 @@ import {
   Text,
   Flex,
   Button,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/client";
 import NextLink from "next/link";
 import Router, { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Layout from "../../components/Layout";
 import { PostProps } from "../../components/Post";
@@ -25,6 +26,7 @@ import prisma from "../../lib/prisma";
 import { Image as CImage } from "@chakra-ui/image";
 import Image from "next/image";
 import { destroy } from "autosize";
+import { useEffect } from "react";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   let post = await prisma.post.findUnique({
@@ -74,7 +76,27 @@ async function deletePost(id: number): Promise<void> {
   Router.back();
   //await Router.push("/");
 }
+const fetchAppleMusicLink = async (Sp_TrackID) => {
+  const url =
+    "https://api.song.link/v1-alpha.1/links?" +
+    new URLSearchParams({
+      url: encodeURIComponent(`spotify:track:${Sp_TrackID}`),
+      userCountry: "JP",
+      platform: "appleMusic",
+    });
+  const Ap_link = await fetch(url)
+    .then(async (res) => {
+      if (!res.ok) {
+        throw new Error(`${res.status}${res.statusText}`);
+      }
+      return await res.json();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
+  return Ap_link;
+};
 const ConvertToYearMonDay = (d: string) => {
   const date = new Date(d);
   const y = date.getFullYear();
@@ -85,15 +107,24 @@ const ConvertToYearMonDay = (d: string) => {
 
 const Post: React.FC<PostProps> = (props) => {
   const [session, loading] = useSession();
+  const [ap_link, setAp_link] = useState(null);
+
   if (loading) {
     return <div>Authenticating ...</div>;
   }
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const userHasValidSession = Boolean(session);
   const postBelongsToUser = session?.user?.email === props.author?.email;
   let title = props.title;
   if (!props.published) {
     title = `${title} (下書き)`;
   }
+
+  useEffect(() => {
+    (async () => {
+      setAp_link(await fetchAppleMusicLink(props.music.songId));
+    })();
+  }, []);
 
   return (
     <Layout>
@@ -142,6 +173,16 @@ const Post: React.FC<PostProps> = (props) => {
               allowFullScreen
               sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
             ></iframe>
+
+            {isMobile && ap_link && (
+              <Box
+                as="a"
+                href={ap_link.linksByPlatform.appleMusic.nativeAppUriMobile}
+                color="teal"
+              >
+                Open Apple Music
+              </Box>
+            )}
           </VStack>
         </WrapItem>
         <WrapItem>
