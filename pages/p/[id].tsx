@@ -94,6 +94,7 @@ const Post: React.FC<PostProps> = (props) => {
   if (!props.published) {
     title = `${title} (下書き)`;
   }
+
   return (
     <Layout>
       <Wrap justify="center" mt="3%" spacing="10%">
@@ -126,6 +127,21 @@ const Post: React.FC<PostProps> = (props) => {
               src={"https://open.spotify.com/embed/track/" + props.music.songId}
               width="90%"
               height="80px"
+            ></iframe>
+            <iframe
+              width="94%"
+              height="52"
+              src={
+                "https://embed.odesli.co/?" +
+                new URLSearchParams({
+                  url: "spotify:" + "track:" + props.music.songId,
+                  theme: "light",
+                }).toString()
+              }
+              frameBorder="0"
+              allowTransparency
+              allowFullScreen
+              sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
             ></iframe>
           </VStack>
         </WrapItem>
@@ -180,17 +196,3 @@ const Post: React.FC<PostProps> = (props) => {
 };
 
 export default Post;
-
-/**
- * <iframe
-              width="100%"
-              height="30%"
-              src={
-                "https://embed.odesli.co/?" +
-                new URLSearchParams({
-                  url: props.music.songId,
-                  theme: "light",
-                }).toString()
-              }
-            ></iframe>
- */
