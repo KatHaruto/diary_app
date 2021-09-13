@@ -84,7 +84,7 @@ const fetchAppleMusicLink = async (Sp_TrackID) => {
       userCountry: "JP",
       platform: "appleMusic",
     });
-  const Ap_link = await fetch(url)
+  const Ap_link = await fetch(url, { mode: "cors" })
     .then(async (res) => {
       if (!res.ok) {
         throw new Error(`${res.status}${res.statusText}`);
