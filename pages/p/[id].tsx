@@ -76,27 +76,7 @@ async function deletePost(id: number): Promise<void> {
   Router.back();
   //await Router.push("/");
 }
-const fetchAppleMusicLink = async (Sp_TrackID) => {
-  const url =
-    "https://api.song.link/v1-alpha.1/links?" +
-    new URLSearchParams({
-      url: encodeURIComponent(`spotify:track:${Sp_TrackID}`),
-      userCountry: "JP",
-      platform: "appleMusic",
-    });
-  const Ap_link = await fetch(url, { mode: "cors" })
-    .then(async (res) => {
-      if (!res.ok) {
-        throw new Error(`${res.status}${res.statusText}`);
-      }
-      return await res.json();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 
-  return Ap_link;
-};
 const ConvertToYearMonDay = (d: string) => {
   const date = new Date(d);
   const y = date.getFullYear();
@@ -116,12 +96,6 @@ const Post: React.FC<PostProps> = (props) => {
   if (!props.published) {
     title = `${title} (下書き)`;
   }
-
-  useEffect(() => {
-    (async () => {
-      setAp_link(await fetchAppleMusicLink(props.music.songId));
-    })();
-  }, []);
 
   if (loading) {
     return <div>Authenticating ...</div>;
@@ -173,16 +147,6 @@ const Post: React.FC<PostProps> = (props) => {
               allowFullScreen
               sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
             ></iframe>
-
-            {isMobile && ap_link && (
-              <Box
-                as="a"
-                href={ap_link.linksByPlatform.appleMusic.nativeAppUriMobile}
-                color="teal"
-              >
-                Open Apple Music
-              </Box>
-            )}
           </VStack>
         </WrapItem>
         <WrapItem>
