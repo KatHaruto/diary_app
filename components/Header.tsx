@@ -39,7 +39,7 @@ const NavLink = ({ name, a }) => (
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
   >
-    <a>{name}</a>
+    {name}
   </Link>
 );
 

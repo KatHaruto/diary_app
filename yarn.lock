@@ -2107,6 +2107,11 @@
   "resolved" "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz"
   "version" "1.1.2"
 
+"dequal@2.0.2":
+  "integrity" "sha512-q9K8BlJVxK7hQYqa6XISGmBZbtQQWVXSrRrWreHC94rMt1QL/Impruc+7p2CYSYuVIUr+YCt6hjrs1kkdJRTug=="
+  "resolved" "https://registry.npmjs.org/dequal/-/dequal-2.0.2.tgz"
+  "version" "2.0.2"
+
 "des.js@^1.0.0":
   "integrity" "sha512-Q0I4pfFrv2VPd34/vfLrFOoRmlYj3OV50i7fskps1jZWK1kApMWWT9G6RRUeYedLcBDIhnSDaUvJMb3AhUlaEA=="
   "resolved" "https://registry.npmjs.org/des.js/-/des.js-1.0.1.tgz"
@@ -3972,7 +3977,7 @@
   "resolved" "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz"
   "version" "3.0.0"
 
-"npm-run-all@^4.1.5":
+"npm-run-all@4.1.5":
   "integrity" "sha512-Oo82gJDAVcaMdi3nuoKFavkIHBRVqQ1qvMb+9LHk/cF4P6B2m8aP04hGf7oL6wZ9BuGwX1onlLhpuoofSyoQDQ=="
   "resolved" "https://registry.npmjs.org/npm-run-all/-/npm-run-all-4.1.5.tgz"
   "version" "4.1.5"
@@ -4623,7 +4628,7 @@
     "ts-easing" "^0.2.0"
     "tslib" "^2.1.0"
 
-"react@*", "react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^16.13.1 || ^17", "react@^16.8.0  || ^17.0.0", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.2", "react@>= 16.8.0 || 17.x.x || 18.x.x", "react@>=16", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@17.0.2":
+"react@*", "react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^16.11.0 || ^17.0.0", "react@^16.13.1 || ^17", "react@^16.8.0  || ^17.0.0", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.2", "react@>= 16.8.0 || 17.x.x || 18.x.x", "react@>=16", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
   "version" "17.0.2"
@@ -5280,6 +5285,13 @@
   "version" "8.1.1"
   dependencies:
     "has-flag" "^4.0.0"
+
+"swr@^1.0.1":
+  "integrity" "sha512-EPQAxSjoD4IaM49rpRHK0q+/NzcwoT8c0/Ylu/u3/6mFj/CWnQVjNJ0MV2Iuw/U+EJSd2TX5czdAwKPYZIG0YA=="
+  "resolved" "https://registry.npmjs.org/swr/-/swr-1.0.1.tgz"
+  "version" "1.0.1"
+  dependencies:
+    "dequal" "2.0.2"
 
 "table@^6.0.9":
   "integrity" "sha512-ZGum47Yi6KOOFDE8m223td53ath2enHcYLgOCjGr5ngu8bdIARQk6mN/wRMv4yMRcHnCSnHbCEha4sobQx5yWg=="

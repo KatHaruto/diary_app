@@ -10,9 +10,7 @@ const DesktopPost: React.FC<{ post: PostProps }> = ({ post }) => {
     <Box maxW="250px" borderWidth="1px" borderRadius="lg" overflow="hidden">
       <Box position="relative" width="250px" height="250px" cursor="pointer">
         <Link href={`/p/${encodeURIComponent(post.id)}`}>
-          <a>
-            <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
-          </a>
+          <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
         </Link>
       </Box>
       <Box px="6" py="3">

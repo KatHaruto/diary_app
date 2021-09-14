@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import Router from "next/router";
-import Image from "next/image";
 import { Track } from "spotify-web-api-ts/types/types/SpotifyObjects";
 import NotFoundImage from "./static/NotFoundImage.png";
 import autosize from "autosize";
@@ -17,7 +16,9 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import { convertMillisToMinutesAndSecret } from "../lib/utils";
+import TrackCard from "../components/TrackCard";
+import { useCallback } from "react";
+import useSearchTracksApi from "../lib/hook/useSearchTracksAPI";
 
 const Draft: React.FC = () => {
   const [title, setTitle] = useState<string>("");
@@ -30,6 +31,12 @@ const Draft: React.FC = () => {
   const processing = useRef(false);
   const ref = useRef();
 
+  const {
+    data: searchResults_,
+    isValidating: searchLoading,
+    mutate: searchMutate,
+  } = useSearchTracksApi({ searchWord });
+  /*
   useEffect(() => {
     (async () => {
       if (searchWord) {
@@ -51,127 +58,51 @@ const Draft: React.FC = () => {
       }
     })();
   }, [searchWord]);
+*/
+  useEffect(() => {
+    searchMutate();
+  }, [searchWord]);
+  const submitData = useCallback(
+    async (e: React.SyntheticEvent) => {
+      e.preventDefault();
 
-  const selectedmusicJSX = useMemo(() => {
-    if (music) {
-      return (
-        <Box>
-          <Flex onClick={() => handleSelectMusic(music)} key={music.id} m="1">
-            <Box position="relative" height="100px" width="100px">
-              <Image
-                src={music.album.images[0].url}
-                alt="No ArtWork"
-                layout={"fill"}
-                onError={(e) => {
-                  e.currentTarget.src = NotFoundImage.src;
-                }}
-              />
-            </Box>
-            <Box pl="3" isTruncated width="300px">
-              <Text fontWeight="semibold" fontSize="sm">
-                {music.name}
-              </Text>
-              <Text fontSize="xs">
-                {music.artists[0].name + ": " + music.album.name}
-              </Text>
-              <Text fontSize="xs">
-                {music.album.release_date + " "}
-                {convertMillisToMinutesAndSecret(music.duration_ms)}
-              </Text>
-            </Box>
-          </Flex>
-          <Button
-            onClick={() => {
-              setMusic(null);
-            }}
-          >
-            cancel
-          </Button>
-        </Box>
-      );
-    }
-  }, [music]);
-  const submitData = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+      if (processing.current) return;
+      try {
+        processing.current = true;
 
-    if (processing.current) return;
-    try {
-      processing.current = true;
+        const song = {
+          id: music.id,
+          name: music.name,
+          album: { id: music.album.id, name: music.album.name },
+          artists: {
+            id: music.artists.map((a) => a.id),
+            name: music.artists.map((a) => a.name),
+          },
+          image_url: music.album.images.length
+            ? music.album.images[0].url
+            : NotFoundImage.src,
+          spotify_url: music.external_urls.spotify,
+        };
 
-      const song = {
-        id: music.id,
-        name: music.name,
-        album: { id: music.album.id, name: music.album.name },
-        artists: {
-          id: music.artists.map((a) => a.id),
-          name: music.artists.map((a) => a.name),
-        },
-        image_url: music.album.images.length
-          ? music.album.images[0].url
-          : NotFoundImage.src,
-        spotify_url: music.external_urls.spotify,
-      };
-
-      const body = { title, content, isMarkDown, published, song };
-      await fetch("/api/post", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (published) {
-        await Router.push("/");
-      } else {
-        await Router.push("/posts");
+        const body = { title, content, isMarkDown, published, song };
+        await fetch("/api/post", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (published) {
+          await Router.push("/");
+        } else {
+          await Router.push("/posts");
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        processing.current = false;
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      processing.current = false;
-    }
-  };
-  const handleMapSearchResult = (r: Track) => {
-    const src = r.album.images.length
-      ? r.album.images[0].url
-      : NotFoundImage.src;
-
-    return (
-      <Flex onClick={() => handleSelectMusic(r)} key={r.id} m="1">
-        <Box
-          position="relative"
-          height={["60px", "100px"]}
-          width={["60px", "100px"]}
-        >
-          <Image
-            src={src}
-            alt="No ArtWork"
-            layout={"fill"}
-            onError={(e) => {
-              e.currentTarget.src = NotFoundImage.src;
-            }}
-          />
-        </Box>
-        <Box
-          minW={["140px", "300px"]}
-          maxW={["140px", "300px"]}
-          pl="3"
-          isTruncated
-          overflow="scroll"
-        >
-          <Text fontWeight="semibold" fontSize="sm">
-            {r.name}
-          </Text>
-          <Text fontSize="xs">{r.artists[0].name + ": " + r.album.name}</Text>
-          <Text fontSize="xs">
-            {r.album.release_date + " "}
-            {convertMillisToMinutesAndSecret(r.duration_ms)}
-          </Text>
-        </Box>
-      </Flex>
-    );
-  };
-  const handleSelectMusic = (track: Track) => {
-    setMusic(track);
-  };
+    },
+    [title, content, isMarkDown, published, music]
+  ); //processing variable only changes in this function.
 
   useEffect(() => {
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -182,20 +113,20 @@ const Draft: React.FC = () => {
     };
   }, []);
 
-  const handleBeforeUnload = (e) => {
+  const handleBeforeUnload = useCallback((e) => {
     e.preventDefault();
     const message =
       "Are you sure you want to leave? All provided data will be lost.";
     e.returnValue = message;
     return message;
-  };
+  }, []);
 
   return (
     <Layout>
       <VStack justify="center" mt="3%" spacing={["0%", "10%"]}>
         <Box width={["200px", "400px"]}>
           <VStack>
-            <Box position="relative" minW={["200px", "400px"]}>
+            <Box position="relative" minW={["240px", "400px"]}>
               <Input
                 value={searchWord}
                 onChange={(e) => {
@@ -205,10 +136,30 @@ const Draft: React.FC = () => {
               />
             </Box>
             <Box maxW={["300px", "400px"]} maxH="500px" overflow="scroll">
-              {selectedmusicJSX}
-
-              {!selectedmusicJSX &&
-                searchResults.map((r) => handleMapSearchResult(r))}
+              {music ? (
+                <Box>
+                  <TrackCard key={music.id} track={music} />
+                  <Button
+                    onClick={() => {
+                      setMusic(null);
+                    }}
+                  >
+                    cancel
+                  </Button>
+                </Box>
+              ) : (
+                searchResults_ &&
+                searchResults_.map((r) => (
+                  <Box
+                    key={r.id}
+                    onClick={() => {
+                      setMusic(r);
+                    }}
+                  >
+                    <TrackCard track={r} />
+                  </Box>
+                ))
+              )}
             </Box>
           </VStack>
         </Box>
@@ -247,7 +198,7 @@ const Draft: React.FC = () => {
                 />
                 <Flex>
                   <FormControl display="flex" alignItems="center">
-                    <FormLabel htmlFor="is_published" mb="0">
+                    <FormLabel id="is_published" htmlFor="is_published" mb="0">
                       <Box
                         fontSize="sm"
                         fontWeight="semibold"

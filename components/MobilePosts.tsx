@@ -12,10 +12,6 @@ import React from "react";
 import Image from "next/image";
 import { PostProps } from "./Post";
 import { calcHowLongAgo } from "../lib/utils";
-/**
- * 
-    );
- */
 
 const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
   return (
