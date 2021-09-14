@@ -1,17 +1,5 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import {
-  Badge,
-  Box,
-  Link as CLink,
-  Text,
-  Image as CImage,
-  Spacer,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import Link from "next/link";
-import Image from "next/image";
-import { forwardRef } from "react";
+import { useBreakpointValue } from "@chakra-ui/react";
 import DesktopPost from "./DesktopPost";
 import MobilePost from "./MobilePosts";
 export type PostProps = {
@@ -21,7 +9,7 @@ export type PostProps = {
     name: string;
     email: string;
     image: string;
-  } | null;
+  };
   music: {
     songId: string;
     songName: string;

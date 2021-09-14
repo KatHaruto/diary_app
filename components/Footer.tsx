@@ -1,5 +1,4 @@
 import { Box, Container, Stack, Text } from "@chakra-ui/layout";
-import { useColorModeValue } from "@chakra-ui/system";
 import React from "react";
 
 const Footer: React.FC = () => {

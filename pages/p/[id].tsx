@@ -2,7 +2,6 @@ import {
   Avatar,
   Box,
   HStack,
-  Link as CLink,
   Spacer,
   StackDivider,
   VStack,
@@ -11,22 +10,17 @@ import {
   Text,
   Flex,
   Button,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/client";
-import NextLink from "next/link";
-import Router, { useRouter } from "next/router";
+import Router from "next/router";
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Layout from "../../components/Layout";
 import { PostProps } from "../../components/Post";
 import prisma from "../../lib/prisma";
-
-import { Image as CImage } from "@chakra-ui/image";
 import Image from "next/image";
-import { destroy } from "autosize";
-import { useEffect } from "react";
+import { ConvertToYearMonDay } from "../../lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   let post = await prisma.post.findUnique({
@@ -74,28 +68,12 @@ async function deletePost(id: number): Promise<void> {
     method: "DELETE",
   });
   Router.back();
-  //await Router.push("/");
 }
-
-const ConvertToYearMonDay = (d: string) => {
-  const date = new Date(d);
-  const y = date.getFullYear();
-  const m = ("00" + (date.getMonth() + 1)).slice(-2);
-  const da = ("00" + date.getDate()).slice(-2);
-  return y + "/" + m + "/" + da;
-};
 
 const Post: React.FC<PostProps> = (props) => {
   const [session, loading] = useSession();
-  const [ap_link, setAp_link] = useState(null);
-
-  const isMobile = useBreakpointValue({ base: true, md: false });
   const userHasValidSession = Boolean(session);
   const postBelongsToUser = session?.user?.email === props.author?.email;
-  let title = props.title;
-  if (!props.published) {
-    title = `${title} (下書き)`;
-  }
 
   if (loading) {
     return <div>Authenticating ...</div>;
@@ -153,7 +131,7 @@ const Post: React.FC<PostProps> = (props) => {
           <VStack>
             <Box maxW={["300px", "500px"]} minW={["300px", "500px"]}>
               <Text fontWeight="semibold" fontSize="24px">
-                {props.title}
+                {props.title + props.published ? "" : "(下書き)"}
               </Text>
               <Box
                 minH={["50px", "50px", "50px", "415px"]}

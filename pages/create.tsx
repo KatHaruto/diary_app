@@ -1,40 +1,22 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import Router from "next/router";
 import Image from "next/image";
 import { Track } from "spotify-web-api-ts/types/types/SpotifyObjects";
 import NotFoundImage from "./static/NotFoundImage.png";
-import TextareaAutosize from "react-textarea-autosize";
 import autosize from "autosize";
 import {
-  HStack,
   VStack,
-  StackDivider,
   Box,
-  Spacer,
   Input,
-  Table,
-  Th,
-  Tr,
   Flex,
   Text,
-  Td,
-  Tbody,
   Button,
-  WrapItem,
-  Wrap,
   Textarea,
   Switch,
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import ReactMarkdown from "react-markdown";
 import { convertMillisToMinutesAndSecret } from "../lib/utils";
 
 const Draft: React.FC = () => {
@@ -42,12 +24,10 @@ const Draft: React.FC = () => {
   const [content, setContent] = useState<string>("");
   const [published, setPublished] = useState<Boolean>(false);
   const [music, setMusic] = useState<Track>(null);
-  //const [isMarkDown, ToggleIsMarkDown] = useToggle();
-  const [isMarkDown, setIsMarkDown] = useState(false);
+  const [isMarkDown, setIsMarkDown] = useState<Boolean>(false);
   const [searchWord, setSearchWord] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
   const processing = useRef(false);
-
   const ref = useRef();
 
   useEffect(() => {

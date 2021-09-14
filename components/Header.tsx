@@ -1,5 +1,4 @@
 import React from "react";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/client";
 import {
@@ -7,17 +6,14 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
   HStack,
   IconButton,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
-  MenuItemOption,
   MenuList,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 import { RiArticleLine, RiLogoutBoxRLine } from "react-icons/ri";
@@ -43,7 +39,7 @@ const NavLink = ({ name, a }) => (
       bg: useColorModeValue("gray.200", "gray.700"),
     }}
   >
-    {name}
+    <a>{name}</a>
   </Link>
 );
 

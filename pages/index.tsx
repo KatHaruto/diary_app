@@ -1,35 +1,17 @@
-import type { GetStaticProps, NextPage } from "next";
+import type { GetStaticProps } from "next";
 import prisma from "../lib/prisma";
 import Post, { PostProps } from "../components/Post";
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
-import NextLink from "next/link";
+import React, { useMemo, useState } from "react";
 import Layout from "../components/Layout";
 import {
-  Table,
-  Th,
-  Thead,
-  Tr,
-  useColorModeValue,
   Wrap,
   WrapItem,
-  Link as CLink,
-  Box,
   Flex,
-  HStack,
-  IconButton,
-  Select,
-  Button,
   Menu,
   MenuButton,
-  MenuDivider,
-  MenuItemOption,
   MenuList,
-  MenuOptionGroup,
-  Text,
-  Heading,
   MenuItem,
 } from "@chakra-ui/react";
-import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 export const getStaticProps: GetStaticProps = async () => {
   let feed = await prisma.post.findMany({

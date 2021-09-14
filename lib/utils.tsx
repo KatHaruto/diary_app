@@ -29,3 +29,11 @@ export const calcHowLongAgo = (dateString: string) => {
 
   return "今";
 };
+
+export const ConvertToYearMonDay = (d: string) => {
+  const date = new Date(d);
+  const y = date.getFullYear();
+  const m = ("00" + (date.getMonth() + 1)).slice(-2);
+  const da = ("00" + date.getDate()).slice(-2);
+  return y + "/" + m + "/" + da;
+};
