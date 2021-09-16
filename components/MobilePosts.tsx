@@ -18,9 +18,7 @@ const MobilePost: React.FC<{ post: PostProps }> = ({ post }) => {
     <Flex key={post.id} m="1" mt="5">
       <Box position="relative" height="80px" width="80px">
         <Link href={`/p/${encodeURIComponent(post.id)}`}>
-          <a>
-            <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
-          </a>
+          <Image layout="fill" src={post.music.imageUrl} alt="No ArtWork" />
         </Link>
       </Box>
       <Box px="6" minW="250px" maxW="250px" isTruncated>

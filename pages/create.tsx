@@ -15,6 +15,7 @@ import {
   Switch,
   FormControl,
   FormLabel,
+  Spinner,
 } from "@chakra-ui/react";
 import TrackCard from "../components/TrackCard";
 import { useCallback } from "react";
@@ -28,6 +29,7 @@ const Draft: React.FC = () => {
   const [isMarkDown, setIsMarkDown] = useState<Boolean>(false);
   const [searchWord, setSearchWord] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Track[]>([]);
+  const [submit, setSubmit] = useState(false);
   const processing = useRef(false);
   const ref = useRef();
 
@@ -36,29 +38,7 @@ const Draft: React.FC = () => {
     isValidating: searchLoading,
     mutate: searchMutate,
   } = useSearchTracksApi({ searchWord });
-  /*
-  useEffect(() => {
-    (async () => {
-      if (searchWord) {
-        await fetch(
-          "./api/spotify/track?" +
-            new URLSearchParams({
-              word: searchWord,
-            })
-        )
-          .then(async (res) => {
-            const r = JSON.parse(await res.text());
-            setSearchResults(r);
-          })
-          .catch((err) => {
-            setSearchResults([]);
-          });
-      } else {
-        setSearchResults([]);
-      }
-    })();
-  }, [searchWord]);
-*/
+
   useEffect(() => {
     searchMutate();
   }, [searchWord]);
@@ -69,6 +49,7 @@ const Draft: React.FC = () => {
       if (processing.current) return;
       try {
         processing.current = true;
+        setSubmit(true);
 
         const song = {
           id: music.id,
@@ -215,7 +196,7 @@ const Draft: React.FC = () => {
                     />
                   </FormControl>
                   <Button
-                    disabled={!content || !title}
+                    disabled={!content || !title || !music || submit}
                     colorScheme="teal"
                     type="submit"
                     minW="130px"
@@ -223,6 +204,19 @@ const Draft: React.FC = () => {
                   >
                     {published ? "公開" : "下書き保存"}
                   </Button>
+                  {submit ? (
+                    <Spinner
+                      mx="2"
+                      mt="2"
+                      p="2"
+                      speed="0.65s"
+                      emptyColor="gray.200"
+                      color="teal.400"
+                      size="sm"
+                    />
+                  ) : (
+                    ""
+                  )}
                 </Flex>
               </VStack>
             </Box>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { GetServerSideProps } from "next";
 import Layout from "../components/Layout";
 import Post, { PostProps } from "../components/Post";
@@ -6,15 +6,8 @@ import { useSession, getSession } from "next-auth/client";
 import prisma from "../lib/prisma";
 import {
   Flex,
-  Table,
-  Th,
-  Thead,
-  Tr,
-  Text,
-  SimpleGrid,
   Wrap,
   WrapItem,
-  Box,
   Menu,
   MenuButton,
   MenuItem,
