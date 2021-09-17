@@ -163,6 +163,14 @@ const Header: React.FC = () => {
                   My post
                 </MenuItem>
                 <MenuItem
+                  icon={<RiArticleLine />}
+                  onClick={() => {
+                    router.push("/collage");
+                  }}
+                >
+                  Collage
+                </MenuItem>
+                <MenuItem
                   icon={<RiLogoutBoxRLine />}
                   onClick={() => {
                     signOut();

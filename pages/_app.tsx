@@ -1,7 +1,7 @@
 import { Provider } from "next-auth/client";
 import { AppProps } from "next/app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-
+import React from "react";
 const theme = extendTheme({
   fonts: {
     heading: "Roboto",
