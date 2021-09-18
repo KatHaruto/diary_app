@@ -7,7 +7,6 @@ const SortableItem = SortableElement(CollageItem);
 
 const CollageContainer = ({ items }) => {
   const col = useContext(CollageContext);
-  console.log(col.collages.length);
   return (
     <Grid
       maxW="420px"
