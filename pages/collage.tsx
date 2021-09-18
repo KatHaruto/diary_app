@@ -69,7 +69,6 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
   useEffect(() => {
     const len = collages.length;
     const diff = width * height - len;
-    console.log(diff);
     if (diff >= 0) {
       let new_collages = collages.slice(0, collages.length);
       for (let i = 1; i <= diff; i++) {
