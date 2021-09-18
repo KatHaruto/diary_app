@@ -103,7 +103,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
       height: height,
       collages: collages,
     };
-    const image = await fetch("api/sample", {
+    const image = await fetch("api/collage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
