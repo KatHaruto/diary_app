@@ -167,18 +167,20 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           ))}
         </Wrap>
         <VStack>
-          <Box>
+          <Flex ml="auto">
             <Select
-              placeholder="Select width"
+              placeholder="width"
               onChange={(e) => setWidth(Number(e.target.value))}
+              size="sm"
             >
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
             </Select>
             <Select
-              placeholder="Select height"
+              placeholder="height"
               onChange={(e) => setHeight(Number(e.target.value))}
+              size="sm"
             >
               <option value="3">3</option>
               <option value="4">4</option>
@@ -189,7 +191,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             ) : (
               ""
             )}
-          </Box>
+          </Flex>
           <CollageContext.Provider value={value}>
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
           </CollageContext.Provider>

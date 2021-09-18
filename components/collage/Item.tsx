@@ -30,14 +30,18 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
   return (
     <GridItem
       key={id}
-      minH="200px"
-      minW="200px"
+      maxH={Math.floor(420 / Math.max(col.width, col.height))}
+      maxW={Math.floor(420 / Math.max(col.width, col.height))}
       border="1px"
       bgColor="gray.100"
       borderColor="gray.200"
     >
       {url ? (
-        <Box position="relative" width="200px" height="200px">
+        <Box
+          position="relative"
+          width={Math.floor(420 / Math.max(col.width, col.height))}
+          height={Math.floor(420 / Math.max(col.width, col.height))}
+        >
           <Image layout="fill" src={url} alt="No ArtWork" />
           <IconButton
             display="inline"
@@ -57,7 +61,10 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
           />
         </Box>
       ) : (
-        ""
+        <Box
+          width={Math.floor(420 / Math.max(col.width, col.height))}
+          height={Math.floor(420 / Math.max(col.width, col.height))}
+        ></Box>
       )}
     </GridItem>
   );

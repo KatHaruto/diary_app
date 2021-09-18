@@ -10,8 +10,8 @@ const CollageContainer = ({ items }) => {
   console.log(col.collages.length);
   return (
     <Grid
-      maxW="300px"
-      maxH="300px"
+      maxW="420px"
+      maxH="420px"
       templateColumns={`repeat(${col.width}, 1fr)`}
       templateRows={`repeat(${col.height}, 1fr)`}
     >
