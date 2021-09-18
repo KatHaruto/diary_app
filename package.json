@@ -5,7 +5,7 @@
   "scripts": {
     "migrate:deploy": "prisma migrate deploy",
     "dev": "next dev",
-    "now-build": "rpm -Uvh glibc-2.26-48.amzn2.i686.rpm && yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && npm run build",
+    "now-build": "rpm -Uvh glibc-common-2.26-48.amzn2.x86_64 && yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && npm run build",
     "build": "npm-run-all migrate:deploy build-app",
     "build-app": "next build",
     "start": "next start",
