@@ -9,10 +9,9 @@ import prisma from "../lib/prisma";
 import { SortableContainer } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
 import CollageContaniner from "../components/collage/container";
-import { Button, Grid, Select, VStack } from "@chakra-ui/react";
+import { Button, HStack, Select, Spacer, VStack } from "@chakra-ui/react";
 import { createContext } from "react";
 import { useEffect } from "react";
-import { Canvas } from "canvas";
 
 type IProps = {
   id: number;
@@ -131,18 +130,6 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           fontSize={["20px", "28px"]}
         >
           Collage
-          {imageURL ? (
-            <>
-              <a href={imageURL} target="_blank">
-                preview
-              </a>
-              <a href={imageURL} download>
-                Download
-              </a>
-            </>
-          ) : (
-            ""
-          )}
         </Flex>
       </Flex>
       <Flex>
@@ -167,30 +154,64 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           ))}
         </Wrap>
         <VStack>
-          <Flex ml="auto">
-            <Select
-              placeholder="width"
-              onChange={(e) => setWidth(Number(e.target.value))}
-              size="sm"
-            >
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </Select>
-            <Select
-              placeholder="height"
-              onChange={(e) => setHeight(Number(e.target.value))}
-              size="sm"
-            >
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </Select>
-            {width > 0 && height > 0 ? (
-              <Button onClick={canvasSubmit}>save</Button>
+          <Flex minW="420px" justifyContent="space-between">
+            {imageURL ? (
+              <HStack spacing="2">
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  as="a"
+                  href={imageURL}
+                  target="_blank"
+                >
+                  <Box fontSize="xs">preview</Box>
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  as="a"
+                  href={imageURL}
+                  download
+                >
+                  <Box fontSize="xs">download</Box>
+                </Button>
+              </HStack>
             ) : (
               ""
             )}
+
+            <HStack ml="auto">
+              <Select
+                defaultValue="3"
+                onChange={(e) => setWidth(Number(e.target.value))}
+                size="sm"
+                variant="flushed"
+              >
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Select>
+              <Box mt="1" mx="1">
+                ×
+              </Box>
+              <Select
+                defaultValue="3"
+                onChange={(e) => setHeight(Number(e.target.value))}
+                size="sm"
+                variant="flushed"
+              >
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Select>
+              {width > 0 && height > 0 ? (
+                <Button colorScheme="teal" size="sm" onClick={canvasSubmit}>
+                  OK?
+                </Button>
+              ) : (
+                ""
+              )}
+            </HStack>
           </Flex>
           <CollageContext.Provider value={value}>
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />

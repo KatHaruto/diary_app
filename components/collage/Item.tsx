@@ -48,7 +48,7 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
             aria-label="delete collage"
             icon={<SmallCloseIcon />}
             position="absolute"
-            size="sm"
+            size="xs"
             isRound
             top="0"
             left="0"
