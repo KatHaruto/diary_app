@@ -26,6 +26,7 @@ export default async (req, res) => {
   const buf = canvas.toBuffer();
   const cacheAge = 7 * 24 * 60;
   res.setHeader("Content-Type", "image/png");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Length", buf.length);
   res.setHeader("Cache-Control", `public, max-age=${cacheAge}`);
   res.setHeader("Expires", new Date(Date.now() + cacheAge).toUTCString());
