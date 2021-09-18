@@ -9,8 +9,10 @@ import prisma from "../lib/prisma";
 import { SortableContainer } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
 import CollageContaniner from "../components/collage/container";
-import { Button, Grid } from "@chakra-ui/react";
+import { Button, Grid, Select, VStack } from "@chakra-ui/react";
 import { createContext } from "react";
+import { useEffect } from "react";
+import { Canvas } from "canvas";
 
 type IProps = {
   id: number;
@@ -60,36 +62,63 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
   ]);*/
 
   const Collages = SortableContainer(CollageContaniner);
-  const [imageNum, setImageNum] = useState(9);
-  const [collages, setCollages] = useState(
-    new Array(imageNum).fill(1).map((n, i) => {
-      return { id: n + i, url: "" };
-    })
-  );
-  const [selected, setSelected] = useState<IProps>(null);
+  const [imageURL, setImageURL] = useState("");
+  const [width, setWidth] = useState(3);
+  const [height, setHeight] = useState(3);
+  const [collages, setCollages] = useState([]);
+
+  useEffect(() => {
+    const len = collages.length;
+    const diff = width * height - len;
+    console.log(diff);
+    if (diff >= 0) {
+      let new_collages = collages.slice(0, collages.length);
+      for (let i = 1; i <= diff; i++) {
+        new_collages.push({ id: -(len + i) });
+      }
+      setCollages(new_collages);
+    } else {
+      let new_collages = collages.slice(0, collages.length);
+      new_collages.splice(width * height, -diff);
+      setCollages(new_collages);
+    }
+  }, [width, height]);
   const onSortEnd = (e) => {
     const newCollages = arrayMoveImmutable(collages, e.oldIndex, e.newIndex);
     setCollages(newCollages);
   };
-  const AddCollageItem = (id, url, ind) => {
+  const AddCollageItem = (id, url) => {
     if (collages.map((c) => c.id).includes(id)) {
       return;
     }
     let new_collages = collages.slice(0, collages.length);
+    const ind = collages.findIndex((p) => !p.url);
     new_collages[ind] = { id: id, url: url };
     setCollages(new_collages);
   };
 
-  const DelCollageItem = (ind) => {
-    let new_collages = collages.slice(0, collages.length);
-    new_collages[ind] = { id: collages[ind].id, url: "" };
-    setCollages(new_collages);
+  const canvasSubmit = async () => {
+    const data = {
+      width: width,
+      height: height,
+      collages: collages,
+    };
+    const image = await fetch("api/sample", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((res) => res.blob());
+
+    setImageURL((window.URL || window.webkitURL).createObjectURL(image));
   };
+
   const value = {
-    selected: selected,
-    setSelected: setSelected,
-    Add: AddCollageItem,
-    Del: DelCollageItem,
+    width: width,
+    height: height,
+    collages: collages,
+    setCollages: setCollages,
   };
 
   return (
@@ -102,9 +131,20 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           fontSize={["20px", "28px"]}
         >
           Collage
+          {imageURL ? (
+            <>
+              <a href={imageURL} target="_blank">
+                preview
+              </a>
+              <a href={imageURL} download>
+                Download
+              </a>
+            </>
+          ) : (
+            ""
+          )}
         </Flex>
       </Flex>
-      {selected ? <Box>you select {selected.content}</Box> : ""}
       <Flex>
         <Wrap maxW="300px" mx={["5%", "10%"]} spacing="1" justify="center">
           {props.feed.map((post) => (
@@ -114,13 +154,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
                 width="100px"
                 height="100px"
                 onClick={() => {
-                  (document.activeElement as HTMLElement).focus();
-                  setSelected((p) => {
-                    if (!p || p.id !== post.id) {
-                      return post;
-                    }
-                    return null;
-                  });
+                  AddCollageItem(post.id, post.music.imageUrl);
                 }}
               >
                 <Image
@@ -132,9 +166,34 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             </WrapItem>
           ))}
         </Wrap>
-        <CollageContext.Provider value={value}>
-          <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
-        </CollageContext.Provider>
+        <VStack>
+          <Box>
+            <Select
+              placeholder="Select width"
+              onChange={(e) => setWidth(Number(e.target.value))}
+            >
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </Select>
+            <Select
+              placeholder="Select height"
+              onChange={(e) => setHeight(Number(e.target.value))}
+            >
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </Select>
+            {width > 0 && height > 0 ? (
+              <Button onClick={canvasSubmit}>save</Button>
+            ) : (
+              ""
+            )}
+          </Box>
+          <CollageContext.Provider value={value}>
+            <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
+          </CollageContext.Provider>
+        </VStack>
       </Flex>
     </Layout>
   );

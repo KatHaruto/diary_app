@@ -15,57 +15,49 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
   url,
   ind,
 }) => {
-  //const [isFocus,setIsFocus] = useState(false)
-  const selectedContext = useContext(CollageContext);
-  const handleClick = (id_, url_, ind_) => {
-    console.log(url, selectedContext.selected);
-    if (url && !selectedContext.selected) {
-      selectedContext.Del(ind_);
-    } else if (selectedContext.selected !== null) {
-      selectedContext.Add(
-        selectedContext.selected.id,
-        selectedContext.selected.music.imageUrl,
-        ind_
-      );
-      selectedContext.setSelected(null);
-    }
-  };
+  const col = useContext(CollageContext);
+  const DelCollageItem = useCallback(
+    (ind) => {
+      let new_collages = col.collages.slice(0, col.collages.length);
+      new_collages[ind] = {
+        id: -(col.height * col.width + col.collages[ind].id),
+        url: "",
+      };
+      col.setCollages(new_collages);
+    },
+    [col]
+  );
   return (
     <GridItem
       key={id}
-      minH="100px"
-      minW="100px"
+      minH="200px"
+      minW="200px"
       border="1px"
       bgColor="gray.100"
       borderColor="gray.200"
     >
       {url ? (
-        <Box position="relative" width="100px" height="100px">
+        <Box position="relative" width="200px" height="200px">
           <Image layout="fill" src={url} alt="No ArtWork" />
           <IconButton
+            display="inline"
             aria-label="delete collage"
             icon={<SmallCloseIcon />}
             position="absolute"
-            size="xs"
+            size="sm"
             isRound
-            isActive
             top="0"
             left="0"
+            variant="ghost"
             color="black"
             cursor="pointer"
             onClick={() => {
-              selectedContext.Del(ind);
+              DelCollageItem(ind);
             }}
           />
         </Box>
       ) : (
-        <Button
-          width="100px"
-          height="100px"
-          onClick={() => {
-            handleClick(id, url, ind);
-          }}
-        />
+        ""
       )}
     </GridItem>
   );
