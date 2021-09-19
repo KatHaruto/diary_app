@@ -5,14 +5,11 @@ export default async (req, res) => {
   const canvas = createCanvas(480 * columns, 480 * rows);
   const ctx = canvas.getContext("2d");
   for (let i = 0; i < columns * rows; i++) {
-    console.log("now, " + i + "( " + columns + "," + rows + " )");
-    console.log(collages[i]);
     if (!collages[i].url) {
       continue;
     }
     await loadImage(collages[i].url)
       .then((image) => {
-        console.log(image);
         ctx.drawImage(
           image,
           (i % columns) * 480,

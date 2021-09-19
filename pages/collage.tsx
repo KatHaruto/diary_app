@@ -171,7 +171,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           ))}
         </Wrap>
         <VStack spacing="5">
-          <HStack mr="auto">
+          <HStack>
             <NumberInput
               maxW="50px"
               variant="flushed"
@@ -207,7 +207,12 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
               </NumberInputStepper>
             </NumberInput>
             {
-              <Button colorScheme="teal" size="sm" onClick={canvasSubmit}>
+              <Button
+                mr="3"
+                colorScheme="teal"
+                size="sm"
+                onClick={canvasSubmit}
+              >
                 Collage
               </Button>
             }
