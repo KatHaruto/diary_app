@@ -62,6 +62,16 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   return { props: { feed } };
 };
 
+export type CollageItemType = {
+  id: number;
+  url: string;
+};
+export type CollageContextType = {
+  columns: number;
+  rows: number;
+  collages: CollageItemType[];
+  setCollages: React.Dispatch<React.SetStateAction<CollageItemType[]>>;
+};
 export const CollageContext = createContext(null);
 
 const Collage: React.FC<{ feed: IProps[] }> = (props) => {
@@ -72,12 +82,18 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
   ]);*/
 
   const Collages = SortableContainer(CollageContaniner);
-  const [imageURL, setImageURL] = useState("");
-  const [columns, setColumns] = useState(3);
-  const [rows, setRows] = useState(3);
-  const [collages, setCollages] = useState([]);
-
-  const [noImageId, setNoImageId] = useState(-1);
+  const [imageURL, setImageURL] = useState<string>("");
+  const [columns, setColumns] = useState<number>(3);
+  const [rows, setRows] = useState<number>(3);
+  const [collages, setCollages] = useState<CollageItemType[]>([]);
+  const [CollageContextValue, setCollageContextValue] =
+    useState<CollageContextType>({
+      columns: columns,
+      rows: rows,
+      collages: collages,
+      setCollages: setCollages,
+    });
+  const [noImageId, setNoImageId] = useState<number>(-1);
 
   useEffect(() => {
     const len = collages.length;
@@ -85,7 +101,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
     let new_collages = collages.slice(0, collages.length);
     if (diff >= 0) {
       for (let i = 1; i <= diff; i++) {
-        new_collages.push({ id: noImageId - i });
+        new_collages.push({ id: noImageId - i, url: "" });
       }
       setNoImageId((id) => id - diff);
     } else {
@@ -93,6 +109,15 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
     }
     setCollages(new_collages);
   }, [columns, rows]);
+
+  useEffect(() => {
+    setCollageContextValue({
+      columns: columns,
+      rows: rows,
+      collages: collages,
+      setCollages: setCollages,
+    });
+  }, [columns, rows, collages, setCollages]);
   const onSortEnd = (e) => {
     const newCollages = arrayMoveImmutable(collages, e.oldIndex, e.newIndex);
     setCollages(newCollages);
@@ -123,13 +148,6 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
     }).then((res) => res.blob());
 
     setImageURL((window.URL || window.webkitURL).createObjectURL(image));
-  };
-
-  const value = {
-    columns: columns,
-    rows: rows,
-    collages: collages,
-    setCollages: setCollages,
   };
 
   return (
@@ -242,7 +260,15 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             ""
           )}
 
-          <CollageContext.Provider value={value}>
+          <CollageContext.Provider
+            value={{
+              columns: columns,
+              rows: rows,
+              collages: collages,
+
+              setCollages: setCollages,
+            }}
+          >
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
           </CollageContext.Provider>
         </VStack>

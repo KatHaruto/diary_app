@@ -1,16 +1,8 @@
-import {
-  Box,
-  Button,
-  GridItem,
-  IconButton,
-  useBreakpointValue,
-  useCallbackRef,
-} from "@chakra-ui/react";
+import { Box, GridItem, IconButton } from "@chakra-ui/react";
 import React, { useCallback, useContext, useEffect } from "react";
 import Image from "next/image";
-import { CollageContext } from "../../pages/collage";
+import { CollageContext, CollageContextType } from "../../pages/collage";
 import { SmallCloseIcon } from "@chakra-ui/icons";
-import { useMemo } from "react";
 import { useState } from "react";
 
 const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
@@ -18,23 +10,27 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
   url,
   ind,
 }) => {
-  const col = useContext(CollageContext);
+  const col = useContext<CollageContextType>(CollageContext);
   const [w, setW] = useState({
     mobile: Math.floor(350 / Math.max(col.columns, col.rows)),
-    desktop: Math.floor(420 / Math.max(col.columns, col.rows)),
+    desktop: Math.floor(640 / Math.max(col.columns, col.rows)),
   });
   useEffect(() => {
     setW({
       mobile: Math.floor(350 / Math.max(col.columns, col.rows)),
-      desktop: Math.floor(420 / Math.max(col.columns, col.rows)),
+      desktop: Math.floor(640 / Math.max(col.columns, col.rows)),
     });
   }, [col.columns, col.rows]);
 
   const DelCollageItem = useCallback(
     (ind) => {
       let new_collages = col.collages.slice(0, col.collages.length);
+      const deleteId =
+        new_collages
+          .filter((c) => c.id >= 0)
+          .reduce((a, b) => (a.id < b.id ? a : b)).id - 1;
       new_collages[ind] = {
-        id: -(col.rows * col.columns + col.collages[ind].id),
+        id: deleteId,
         url: "",
       };
       col.setCollages(new_collages);
