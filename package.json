@@ -5,7 +5,7 @@
   "scripts": {
     "migrate:deploy": "prisma migrate deploy",
     "dev": "next dev",
-    "vercel-build": "yum -y downgrade glibc glibc-common glibc-minimal-langpack && yum install libuuid-devel libmount-devel zlib && cp /lib64/{libuuid,libmount,libblkid,libz}.so.1 node_modules/canvas/build/Release/ && npm run build",
+    "vercel-build": " cp /lib64/{libuuid,libmount,libblkid,libz}.so.1 node_modules/canvas/build/Release/ && npm run build",
     "build": "npm-run-all migrate:deploy build-app",
     "build-app": "next build",
     "start": "next start",
