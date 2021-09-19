@@ -9,18 +9,7 @@ import prisma from "../lib/prisma";
 import { SortableContainer } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
 import CollageContaniner from "../components/collage/container";
-import {
-  Button,
-  HStack,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
-  Spacer,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, HStack, Select, Spacer, VStack } from "@chakra-ui/react";
 import { createContext } from "react";
 import { useEffect } from "react";
 
@@ -77,21 +66,20 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
   const [rows, setRows] = useState(3);
   const [collages, setCollages] = useState([]);
 
-  const [noImageId, setNoImageId] = useState(-1);
-
   useEffect(() => {
     const len = collages.length;
     const diff = columns * rows - len;
-    let new_collages = collages.slice(0, collages.length);
     if (diff >= 0) {
+      let new_collages = collages.slice(0, collages.length);
       for (let i = 1; i <= diff; i++) {
-        new_collages.push({ id: noImageId - i });
+        new_collages.push({ id: -(len + i) });
       }
-      setNoImageId((id) => id - diff);
+      setCollages(new_collages);
     } else {
+      let new_collages = collages.slice(0, collages.length);
       new_collages.splice(columns * rows, -diff);
+      setCollages(new_collages);
     }
-    setCollages(new_collages);
   }, [columns, rows]);
   const onSortEnd = (e) => {
     const newCollages = arrayMoveImmutable(collages, e.oldIndex, e.newIndex);
@@ -113,7 +101,6 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
       rows: rows,
       collages: collages,
     };
-    setImageURL("");
     const image = await fetch("api/collage", {
       method: "POST",
       headers: {
@@ -146,8 +133,8 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
       </Flex>
       <VStack spacing="10">
         <Wrap
-          maxW={["90%", "60%"]}
-          minW={["90%", "60%"]}
+          maxW={["100%", "60%"]}
+          minW={["100%", "60%"]}
           spacing="1"
           justify="center"
         >
@@ -170,73 +157,66 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             </WrapItem>
           ))}
         </Wrap>
-        <VStack spacing="5">
-          <HStack mr="auto">
-            <NumberInput
-              maxW="50px"
-              variant="flushed"
-              size="xs"
-              onChange={(v) => setColumns(Number(v))}
-              value={columns}
-              min={1}
-              max={10}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
+        <VStack>
+          <Flex minW={["90%", "420px"]} justifyContent="space-between">
+            {imageURL ? (
+              <HStack spacing="2">
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  as="a"
+                  href={imageURL}
+                  target="_blank"
+                >
+                  <Box fontSize="xs">preview</Box>
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  as="a"
+                  href={imageURL}
+                  download
+                >
+                  <Box fontSize="xs">download</Box>
+                </Button>
+              </HStack>
+            ) : (
+              ""
+            )}
 
-            <Box mt="1" mx="1">
-              ×
-            </Box>
-            <NumberInput
-              maxW="50px"
-              variant="flushed"
-              size="xs"
-              onChange={(v) => setRows(Number(v))}
-              value={rows}
-              min={1}
-              max={10}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            {
-              <Button colorScheme="teal" size="sm" onClick={canvasSubmit}>
-                Collage
-              </Button>
-            }
-          </HStack>
-          {imageURL ? (
-            <HStack spacing="2">
-              <Button
-                size="xs"
-                colorScheme="teal"
-                as="a"
-                href={imageURL}
-                target="_blank"
+            <HStack ml="auto">
+              <Select
+                defaultValue="3"
+                onChange={(e) => setColumns(Number(e.target.value))}
+                size="sm"
+                variant="flushed"
               >
-                <Box fontSize="xs">preview</Box>
-              </Button>
-              <Button
-                size="xs"
-                colorScheme="teal"
-                as="a"
-                href={imageURL}
-                download
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Select>
+              <Box mt="1" mx="1">
+                ×
+              </Box>
+              <Select
+                defaultValue="3"
+                onChange={(e) => setRows(Number(e.target.value))}
+                size="sm"
+                variant="flushed"
               >
-                <Box fontSize="xs">download</Box>
-              </Button>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Select>
+              {columns > 0 && rows > 0 ? (
+                <Button colorScheme="teal" size="sm" onClick={canvasSubmit}>
+                  OK?
+                </Button>
+              ) : (
+                ""
+              )}
             </HStack>
-          ) : (
-            ""
-          )}
-
+          </Flex>
           <CollageContext.Provider value={value}>
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
           </CollageContext.Provider>
