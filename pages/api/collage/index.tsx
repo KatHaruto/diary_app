@@ -23,9 +23,9 @@ export default async (req, res) => {
         });
     }
   }
-  const buf = canvas.toBuffer();
+  const buf = canvas.toBuffer("image/jpeg");
   const cacheAge = 7 * 24 * 60;
-  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Content-Type", "image/jpeg");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Length", buf.length);
   res.setHeader("Cache-Control", `public, max-age=${cacheAge}`);
