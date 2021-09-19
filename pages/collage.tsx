@@ -62,13 +62,13 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
 
   const Collages = SortableContainer(CollageContaniner);
   const [imageURL, setImageURL] = useState("");
-  const [width, setWidth] = useState(3);
-  const [height, setHeight] = useState(3);
+  const [columns, setColumns] = useState(3);
+  const [rows, setRows] = useState(3);
   const [collages, setCollages] = useState([]);
 
   useEffect(() => {
     const len = collages.length;
-    const diff = width * height - len;
+    const diff = columns * rows - len;
     if (diff >= 0) {
       let new_collages = collages.slice(0, collages.length);
       for (let i = 1; i <= diff; i++) {
@@ -77,10 +77,10 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
       setCollages(new_collages);
     } else {
       let new_collages = collages.slice(0, collages.length);
-      new_collages.splice(width * height, -diff);
+      new_collages.splice(columns * rows, -diff);
       setCollages(new_collages);
     }
-  }, [width, height]);
+  }, [columns, rows]);
   const onSortEnd = (e) => {
     const newCollages = arrayMoveImmutable(collages, e.oldIndex, e.newIndex);
     setCollages(newCollages);
@@ -97,8 +97,8 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
 
   const canvasSubmit = async () => {
     const data = {
-      width: width,
-      height: height,
+      columns: columns,
+      rows: rows,
       collages: collages,
     };
     const image = await fetch("api/collage", {
@@ -113,8 +113,8 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
   };
 
   const value = {
-    width: width,
-    height: height,
+    columns: columns,
+    rows: rows,
     collages: collages,
     setCollages: setCollages,
   };
@@ -131,14 +131,19 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           Collage
         </Flex>
       </Flex>
-      <Flex>
-        <Wrap maxW="300px" mx={["5%", "10%"]} spacing="1" justify="center">
+      <VStack spacing="10">
+        <Wrap
+          maxW={["100%", "60%"]}
+          minW={["100%", "60%"]}
+          spacing="1"
+          justify="center"
+        >
           {props.feed.map((post) => (
             <WrapItem key={post.id} overflow="hidden">
               <Box
                 position="relative"
-                width="100px"
-                height="100px"
+                width={["50px", "100px"]}
+                height={["50px", "100px"]}
                 onClick={() => {
                   AddCollageItem(post.id, post.music.imageUrl);
                 }}
@@ -153,7 +158,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
           ))}
         </Wrap>
         <VStack>
-          <Flex minW="420px" justifyContent="space-between">
+          <Flex minW={["90%", "420px"]} justifyContent="space-between">
             {imageURL ? (
               <HStack spacing="2">
                 <Button
@@ -182,7 +187,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             <HStack ml="auto">
               <Select
                 defaultValue="3"
-                onChange={(e) => setWidth(Number(e.target.value))}
+                onChange={(e) => setColumns(Number(e.target.value))}
                 size="sm"
                 variant="flushed"
               >
@@ -195,7 +200,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
               </Box>
               <Select
                 defaultValue="3"
-                onChange={(e) => setHeight(Number(e.target.value))}
+                onChange={(e) => setRows(Number(e.target.value))}
                 size="sm"
                 variant="flushed"
               >
@@ -203,7 +208,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
                 <option value="4">4</option>
                 <option value="5">5</option>
               </Select>
-              {width > 0 && height > 0 ? (
+              {columns > 0 && rows > 0 ? (
                 <Button colorScheme="teal" size="sm" onClick={canvasSubmit}>
                   OK?
                 </Button>
@@ -216,7 +221,7 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
           </CollageContext.Provider>
         </VStack>
-      </Flex>
+      </VStack>
     </Layout>
   );
 };

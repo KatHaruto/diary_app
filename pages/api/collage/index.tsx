@@ -1,10 +1,10 @@
 import { createCanvas, Image, loadImage } from "canvas";
 
 export default async (req, res) => {
-  const { width, height, collages } = req.body;
-  const canvas = createCanvas(640 * width, 640 * height);
+  const { columns, rows, collages } = req.body;
+  const canvas = createCanvas(640 * columns, 640 * rows);
   const ctx = canvas.getContext("2d");
-  for (let i = 0; i < width * height; i++) {
+  for (let i = 0; i < columns * rows; i++) {
     if (!collages[i].url) {
       continue;
     } else {
@@ -12,8 +12,8 @@ export default async (req, res) => {
         .then((image) => {
           ctx.drawImage(
             image,
-            (i % width) * 640,
-            Math.floor(i / height) * 640,
+            (i % columns) * 640,
+            Math.floor(i / rows) * 640,
             640,
             640
           );

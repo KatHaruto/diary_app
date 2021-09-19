@@ -9,10 +9,10 @@ const CollageContainer = ({ items }) => {
   const col = useContext(CollageContext);
   return (
     <Grid
-      maxW="420px"
-      maxH="420px"
-      templateColumns={`repeat(${col.width}, 1fr)`}
-      templateRows={`repeat(${col.height}, 1fr)`}
+      maxW={["350px", "420px"]}
+      maxH={["350px", "420px"]}
+      templateColumns={`repeat(${col.columns}, 1fr)`}
+      templateRows={`repeat(${col.rows}, 1fr)`}
     >
       {items.map((item, i) => (
         <SortableItem
