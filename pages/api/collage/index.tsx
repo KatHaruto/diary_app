@@ -2,26 +2,28 @@ import { createCanvas, Image, loadImage } from "canvas";
 
 export default async (req, res) => {
   const { columns, rows, collages } = req.body;
-  const canvas = createCanvas(640 * columns, 640 * rows);
+  const canvas = createCanvas(480 * columns, 480 * rows);
   const ctx = canvas.getContext("2d");
   for (let i = 0; i < columns * rows; i++) {
+    console.log("now, " + i + "( " + columns + "," + rows + " )");
+    console.log(collages[i]);
     if (!collages[i].url) {
       continue;
-    } else {
-      await loadImage(collages[i].url)
-        .then((image) => {
-          ctx.drawImage(
-            image,
-            (i % columns) * 640,
-            Math.floor(i / rows) * 640,
-            640,
-            640
-          );
-        })
-        .catch((e) => {
-          console.log(e);
-        });
     }
+    await loadImage(collages[i].url)
+      .then((image) => {
+        console.log(image);
+        ctx.drawImage(
+          image,
+          (i % columns) * 480,
+          Math.floor(i / columns) * 480,
+          480,
+          480
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
   const buf = canvas.toBuffer("image/jpeg");
   const cacheAge = 7 * 24 * 60;
