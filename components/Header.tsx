@@ -16,7 +16,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
-import { RiArticleLine, RiLogoutBoxRLine } from "react-icons/ri";
+import { RiArticleLine, RiLogoutBoxRLine, RiCollageLine } from "react-icons/ri";
 import Link from "../lib/Link";
 
 import { useDisclosure, useColorModeValue } from "@chakra-ui/react";
@@ -163,7 +163,7 @@ const Header: React.FC = () => {
                   My post
                 </MenuItem>
                 <MenuItem
-                  icon={<RiArticleLine />}
+                  icon={<RiCollageLine />}
                   onClick={() => {
                     router.push("/collage");
                   }}
