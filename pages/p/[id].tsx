@@ -42,16 +42,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       },
     },
   });
-  if (post !== null) {
-    post = JSON.parse(JSON.stringify(post));
-    return {
-      props: post,
-    };
-  } else {
-    return {
-      props: {},
-    };
-  }
+
+  post = JSON.parse(JSON.stringify(post));
+  return { props: { post } };
 };
 
 async function publishPost(id: number): Promise<void> {
@@ -152,10 +145,10 @@ const Post: React.FC<{ post: PostProps }> = ({ post }) => {
   const [session, loading] = useSession();
   const userHasValidSession = Boolean(session);
   const postBelongsToUser = session?.user?.email === post.author?.email;
-
   if (loading) {
     return <div>Authenticating ...</div>;
   }
+
   return (
     <Layout>
       <Wrap justify="center" mt="3%" spacing="10%">
@@ -175,3 +168,10 @@ const Post: React.FC<{ post: PostProps }> = ({ post }) => {
 };
 
 export default Post;
+/**
+ const [session, loading] = useSession();
+  const userHasValidSession = Boolean(session);
+  const postBelongsToUser = session?.user?.email === post.author?.email;
+
+  
+ */
