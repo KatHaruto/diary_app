@@ -43,6 +43,7 @@
     "@types/autosize": "^4.0.0",
     "@types/react": "17.0.19",
     "@types/react-beforeunload": "^2.1.1",
+    "acorn": "^8.5.0",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "npm-run-all": "4.1.5",
