@@ -45,6 +45,26 @@ type sortType = {
   order: number;
 };
 
+const SortMenu: React.FC<{
+  sort: sortType;
+  handlesort: (column: string, order: number) => void;
+}> = ({ sort, handlesort }) => {
+  return (
+    <Menu isLazy id={"sort_menu_id"}>
+      <MenuButton color="black" fontSize={["xs", "sm"]}>
+        {sort.order > 0 ? "Oldest" : "Latest"}
+      </MenuButton>
+      <MenuList id="sort_list">
+        <MenuItem value="latest" onClick={() => handlesort("createdAt", -1)}>
+          Latest
+        </MenuItem>
+        <MenuItem value="oldest" onClick={() => handlesort("createdAt", 1)}>
+          Oldest
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+};
 const Blog: React.FC<{ feed: PostProps[] }> = (props) => {
   const [sort, setSort] = useState<sortType>({ key: "", order: 0 });
 
@@ -79,22 +99,7 @@ const Blog: React.FC<{ feed: PostProps[] }> = (props) => {
         >
           Public Posts
         </Flex>
-        <Menu isLazy id={"sort_menu_id"}>
-          <MenuButton color="black" fontSize={["xs", "sm"]}>
-            {sort.order > 0 ? "Oldest" : "Latest"}
-          </MenuButton>
-          <MenuList id="sort_list">
-            <MenuItem
-              value="latest"
-              onClick={() => handlesort("createdAt", -1)}
-            >
-              Latest
-            </MenuItem>
-            <MenuItem value="oldest" onClick={() => handlesort("createdAt", 1)}>
-              Oldest
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <SortMenu sort={sort} handlesort={handlesort} />
       </Flex>
       <Wrap mx={["5%", "10%"]} spacing={["5%", "10%"]} justify="center">
         {props.feed.map((post) => (

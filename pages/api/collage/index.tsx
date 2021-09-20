@@ -1,6 +1,6 @@
-import { createCanvas, Image, loadImage } from "canvas";
-
-export default async (req, res) => {
+import { createCanvas, loadImage } from "canvas";
+import { NextApiRequest, NextApiResponse } from "next";
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { columns, rows, collages } = req.body;
   const canvas = createCanvas(480 * columns, 480 * rows);
   const ctx = canvas.getContext("2d");

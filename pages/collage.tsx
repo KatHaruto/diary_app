@@ -1,7 +1,7 @@
 import { Box, Flex, Wrap, WrapItem } from "@chakra-ui/layout";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import Layout from "../components/Layout";
 import Image from "next/image";
 import prisma from "../lib/prisma";
@@ -17,14 +17,12 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Select,
-  Spacer,
   VStack,
 } from "@chakra-ui/react";
 import { createContext } from "react";
 import { useEffect } from "react";
 
-type IProps = {
+type CollageProps = {
   id: number;
   title: string;
 
@@ -36,6 +34,38 @@ type IProps = {
   isMarkDown: boolean;
   createdAt: string;
 };
+
+export type CollageItemType = {
+  id: number;
+  url: string;
+};
+export type CollageContextType = {
+  columns: number;
+  rows: number;
+  collages: CollageItemType[];
+  setCollages: React.Dispatch<React.SetStateAction<CollageItemType[]>>;
+};
+
+type CollageCandidateItemProps = {
+  id: number;
+  url: string;
+  addHandler: (arg: CollageItemType) => void;
+};
+
+type CollageMenuProps = {
+  columns: number;
+  rows: number;
+  setColumns: React.Dispatch<React.SetStateAction<number>>;
+  setRows: React.Dispatch<React.SetStateAction<number>>;
+  submitCanvas: () => Promise<void>;
+};
+
+type CollageResultMenuProps = {
+  imageURL: string;
+};
+
+export const CollageContext = createContext<CollageContextType>(null);
+
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getSession({ req });
   if (!session) {
@@ -62,24 +92,104 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   return { props: { feed } };
 };
 
-export type CollageItemType = {
-  id: number;
-  url: string;
+const CollageCandidateItem: React.FC<CollageCandidateItemProps> = ({
+  id,
+  url,
+  addHandler,
+}) => {
+  return (
+    <Box
+      position="relative"
+      width={["70px", "100px"]}
+      height={["70px", "100px"]}
+      onClick={() => {
+        addHandler({ id: id, url: url });
+      }}
+    >
+      <Image layout="fill" src={url} alt="No ArtWork" />
+    </Box>
+  );
 };
-export type CollageContextType = {
-  columns: number;
-  rows: number;
-  collages: CollageItemType[];
-  setCollages: React.Dispatch<React.SetStateAction<CollageItemType[]>>;
-};
-export const CollageContext = createContext(null);
 
-const Collage: React.FC<{ feed: IProps[] }> = (props) => {
+const CollageMenu: React.FC<CollageMenuProps> = ({
+  columns,
+  rows,
+  setColumns,
+  setRows,
+  submitCanvas,
+}) => {
+  return (
+    <HStack>
+      <NumberInput
+        maxW="50px"
+        variant="flushed"
+        size="md"
+        onChange={(v) => setColumns(Number(v))}
+        value={columns}
+        min={1}
+        max={7}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
+
+      <Box mt="1" mx="1">
+        ×
+      </Box>
+      <NumberInput
+        maxW="50px"
+        variant="flushed"
+        size="md"
+        onChange={(v) => setRows(Number(v))}
+        value={rows}
+        min={1}
+        max={7}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
+      {
+        <Button mr="3" colorScheme="teal" size="sm" onClick={submitCanvas}>
+          Collage
+        </Button>
+      }
+    </HStack>
+  );
+};
+
+const CollageResultMenu: React.FC<CollageResultMenuProps> = ({ imageURL }) => {
+  return (
+    <HStack spacing="2">
+      <Button
+        size="xs"
+        colorScheme="teal"
+        as="a"
+        href={imageURL}
+        target="_blank"
+      >
+        <Box fontSize="xs">preview</Box>
+      </Button>
+      <Button
+        size="xs"
+        colorScheme="teal"
+        as="a"
+        href={imageURL}
+        download="collage.jpg"
+      >
+        <Box fontSize="xs">download</Box>
+      </Button>
+    </HStack>
+  );
+};
+const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
   //<Menu  isLazy id=<hoge>>
   //Menu is explicitly needed to set id
-  /*const [collages, setCollages] = useState<number[]>([
-    1, 2, 3, 4, 5, 6, 7, 8, 9,
-  ]);*/
 
   const Collages = SortableContainer(CollageContaniner);
   const [imageURL, setImageURL] = useState<string>("");
@@ -118,11 +228,12 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
       setCollages: setCollages,
     });
   }, [columns, rows, collages, setCollages]);
+
   const onSortEnd = (e) => {
     const newCollages = arrayMoveImmutable(collages, e.oldIndex, e.newIndex);
     setCollages(newCollages);
   };
-  const AddCollageItem = (id, url) => {
+  const AddCollageItem = ({ id, url }: CollageItemType) => {
     if (collages.map((c) => c.id).includes(id)) {
       return;
     }
@@ -132,35 +243,32 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
     setCollages(new_collages);
   };
 
-  const canvasSubmit = async () => {
-    const data = {
-      columns: columns,
-      rows: rows,
-      collages: collages,
-    };
+  const submitCanvas = useCallback(async () => {
     setImageURL("");
     const image = await fetch("api/collage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        columns: columns,
+        rows: rows,
+        collages: collages,
+      }),
     }).then((res) => res.blob());
 
     setImageURL((window.URL || window.webkitURL).createObjectURL(image));
-  };
+  }, [columns, rows, collages]);
 
   return (
     <Layout>
-      <Flex>
-        <Flex
-          justify="center"
-          m="3%"
-          fontWeight="semibold"
-          fontSize={["20px", "28px"]}
-        >
-          Collage
-        </Flex>
+      <Flex
+        justify="center"
+        m="3%"
+        fontWeight="semibold"
+        fontSize={["20px", "28px"]}
+      >
+        Collage
       </Flex>
       <VStack spacing="10">
         <Wrap
@@ -171,104 +279,25 @@ const Collage: React.FC<{ feed: IProps[] }> = (props) => {
         >
           {props.feed.map((post) => (
             <WrapItem key={post.id} overflow="hidden">
-              <Box
-                position="relative"
-                width={["50px", "100px"]}
-                height={["50px", "100px"]}
-                onClick={() => {
-                  AddCollageItem(post.id, post.music.imageUrl);
-                }}
-              >
-                <Image
-                  layout="fill"
-                  src={post.music.imageUrl}
-                  alt="No ArtWork"
-                />
-              </Box>
+              <CollageCandidateItem
+                id={post.id}
+                url={post.music.imageUrl}
+                addHandler={AddCollageItem}
+              />
             </WrapItem>
           ))}
         </Wrap>
         <VStack spacing="5">
-          <HStack>
-            <NumberInput
-              maxW="50px"
-              variant="flushed"
-              size="xs"
-              onChange={(v) => setColumns(Number(v))}
-              value={columns}
-              min={1}
-              max={10}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
+          <CollageMenu
+            columns={columns}
+            rows={rows}
+            setColumns={setColumns}
+            setRows={setRows}
+            submitCanvas={submitCanvas}
+          />
+          {imageURL && <CollageResultMenu imageURL={imageURL} />}
 
-            <Box mt="1" mx="1">
-              ×
-            </Box>
-            <NumberInput
-              maxW="50px"
-              variant="flushed"
-              size="xs"
-              onChange={(v) => setRows(Number(v))}
-              value={rows}
-              min={1}
-              max={10}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            {
-              <Button
-                mr="3"
-                colorScheme="teal"
-                size="sm"
-                onClick={canvasSubmit}
-              >
-                Collage
-              </Button>
-            }
-          </HStack>
-          {imageURL ? (
-            <HStack spacing="2">
-              <Button
-                size="xs"
-                colorScheme="teal"
-                as="a"
-                href={imageURL}
-                target="_blank"
-              >
-                <Box fontSize="xs">preview</Box>
-              </Button>
-              <Button
-                size="xs"
-                colorScheme="teal"
-                as="a"
-                href={imageURL}
-                download
-              >
-                <Box fontSize="xs">download</Box>
-              </Button>
-            </HStack>
-          ) : (
-            ""
-          )}
-
-          <CollageContext.Provider
-            value={{
-              columns: columns,
-              rows: rows,
-              collages: collages,
-
-              setCollages: setCollages,
-            }}
-          >
+          <CollageContext.Provider value={CollageContextValue}>
             <Collages items={collages} onSortEnd={onSortEnd} axis="xy" />
           </CollageContext.Provider>
         </VStack>
