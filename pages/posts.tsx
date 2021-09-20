@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { GetServerSideProps } from "next";
 import Layout from "../components/Layout";
 import Post, { PostProps } from "../components/Post";
@@ -59,7 +59,7 @@ const Posts: React.FC<{ posts: PostProps[] }> = (props) => {
 
   const [sort, setSort] = useState<sortType>({ key: "", order: 0 });
 
-  useMemo(() => {
+  useEffect(() => {
     let tmp_posts = props.posts;
     if (sort.key) {
       tmp_posts = tmp_posts.sort((a: PostProps, b: PostProps) => {
@@ -68,7 +68,6 @@ const Posts: React.FC<{ posts: PostProps[] }> = (props) => {
         return (d1 === d2 ? 0 : d1 > d2 ? 1 : -1) * sort.order;
       });
     }
-    return tmp_posts;
   }, [sort]);
 
   const handlesort = (column: string, order: number) => {

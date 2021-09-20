@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from "canvas";
 import { NextApiRequest, NextApiResponse } from "next";
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { columns, rows, collages } = req.body;
   const canvas = createCanvas(480 * columns, 480 * rows);

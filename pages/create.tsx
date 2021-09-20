@@ -105,6 +105,7 @@ const SearchSongResult: React.FC<SearchSongResultProps> = ({
     </Box>
   );
 };
+// eslint-disable-next-line react/display-name
 const InputDiary = forwardRef<HTMLTextAreaElement, InputDiaryProps>(
   ({ title, setTitle, setContent }, ref) => {
     return (
@@ -133,6 +134,7 @@ const InputDiary = forwardRef<HTMLTextAreaElement, InputDiaryProps>(
     );
   }
 );
+// eslint-disable-next-line react/display-name
 const InputDiaryForm = forwardRef<HTMLTextAreaElement, InputDiaryFormProps>(
   (
     {
@@ -253,6 +255,7 @@ const Draft: React.FC = () => {
 
   useEffect(() => {
     searchMutate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchWord]);
   const submitData = useCallback(
     async (e: React.SyntheticEvent) => {
@@ -297,15 +300,6 @@ const Draft: React.FC = () => {
     [title, content, isMarkDown, published, music]
   ); //processing variable only changes in this function.
 
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    autosize(ref.current);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      autosize.destroy(ref.current);
-    };
-  }, []);
-
   const handleBeforeUnload = useCallback((e) => {
     e.preventDefault();
     const message =
@@ -313,6 +307,15 @@ const Draft: React.FC = () => {
     e.returnValue = message;
     return message;
   }, []);
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    autosize(ref.current);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      autosize.destroy(ref.current);
+    };
+  }, [handleBeforeUnload]);
 
   return (
     <Layout>
