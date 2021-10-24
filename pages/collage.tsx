@@ -9,6 +9,7 @@ import prisma from "../lib/prisma";
 import { SortableContainer } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
 import CollageContaniner from "../components/collage/container";
+import { SearchSong } from "../lib/spotifySearch";
 import {
   Button,
   HStack,
@@ -21,6 +22,9 @@ import {
 } from "@chakra-ui/react";
 import { createContext } from "react";
 import { useEffect } from "react";
+import { Track } from "spotify-web-api-ts/types/types/SpotifyObjects";
+import useSearchTracksApi from "../lib/hook/useSearchTracksAPI";
+import TrackCard from "../components/TrackCard";
 
 type CollageProps = {
   id: number;
@@ -43,6 +47,8 @@ export type CollageContextType = {
   columns: number;
   rows: number;
   collages: CollageItemType[];
+  emptyId: number;
+  setEmptyId: React.Dispatch<React.SetStateAction<number>>;
   setCollages: React.Dispatch<React.SetStateAction<CollageItemType[]>>;
 };
 
@@ -90,6 +96,60 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   feed = JSON.parse(JSON.stringify(feed));
 
   return { props: { feed } };
+};
+
+type SearchSongResultForCollageProps = {
+  music: Track;
+  setMusic: React.Dispatch<React.SetStateAction<Track>>;
+  searchResults: Track[];
+  collageItemId: number;
+  addHandler: (arg: CollageItemType) => void;
+};
+const SearchSongResultForCollage: React.FC<SearchSongResultForCollageProps> = ({
+  music,
+  setMusic,
+  searchResults,
+  collageItemId,
+  addHandler,
+}) => {
+  return (
+    <Box maxW={["300px", "400px"]} maxH="500px" overflow="scroll">
+      {music ? (
+        <Box>
+          <TrackCard key={music.id} track={music} />
+          <Button
+            onClick={() => {
+              setMusic(null);
+            }}
+          >
+            cancel
+          </Button>
+          <Button
+            onClick={() => {
+              addHandler({
+                id: collageItemId,
+                url: music.album.images[0].url,
+              });
+            }}
+          >
+            OK
+          </Button>
+        </Box>
+      ) : (
+        searchResults &&
+        searchResults.map((r: Track) => (
+          <Box
+            key={r.id}
+            onClick={() => {
+              setMusic(r);
+            }}
+          >
+            <TrackCard track={r} />
+          </Box>
+        ))
+      )}
+    </Box>
+  );
 };
 
 const CollageCandidateItem: React.FC<CollageCandidateItemProps> = ({
@@ -196,14 +256,29 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
   const [columns, setColumns] = useState<number>(3);
   const [rows, setRows] = useState<number>(3);
   const [collages, setCollages] = useState<CollageItemType[]>([]);
+  const [music, setMusic] = useState<Track>(null);
+  const [searchWord, setSearchWord] = useState<string>("");
+  const [emptyId, setEmptyId] = useState<number>(-1);
+  const [collageItemId, setCollageItemId] = useState<number>(0);
   const [CollageContextValue, setCollageContextValue] =
     useState<CollageContextType>({
       columns: columns,
       rows: rows,
       collages: collages,
+      emptyId: emptyId,
+      setEmptyId: setEmptyId,
       setCollages: setCollages,
     });
-  const [noImageId, setNoImageId] = useState<number>(-1);
+
+  const {
+    data: searchResults,
+    isValidating: searchLoading,
+    mutate: searchMutate,
+  } = useSearchTracksApi({ searchWord });
+
+  useEffect(() => {
+    searchMutate();
+  }, [searchWord]);
 
   useEffect(() => {
     const len = collages.length;
@@ -211,9 +286,9 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
     let new_collages = collages.slice(0, collages.length);
     if (diff >= 0) {
       for (let i = 1; i <= diff; i++) {
-        new_collages.push({ id: noImageId - i, url: "" });
+        new_collages.push({ id: emptyId - i, url: "" });
       }
-      setNoImageId((id) => id - diff);
+      setEmptyId((id) => id - diff);
     } else {
       new_collages.splice(columns * rows, -diff);
     }
@@ -225,6 +300,8 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
       columns: columns,
       rows: rows,
       collages: collages,
+      emptyId: emptyId,
+      setEmptyId: setEmptyId,
       setCollages: setCollages,
     });
   }, [columns, rows, collages, setCollages]);
@@ -234,13 +311,20 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
     setCollages(newCollages);
   };
   const AddCollageItem = ({ id, url }: CollageItemType) => {
-    if (collages.map((c) => c.id).includes(id)) {
+    if (collages.map((c) => c.url).includes(url)) {
       return;
     }
     let new_collages = collages.slice(0, collages.length);
     const ind = collages.findIndex((p) => !p.url);
     new_collages[ind] = { id: id, url: url };
+    setCollageItemId(id + 1);
     setCollages(new_collages);
+  };
+
+  const AddCollageItemFromSearchResult = ({ id, url }: CollageItemType) => {
+    setMusic(null);
+    setSearchWord("");
+    AddCollageItem({ id, url });
   };
 
   const submitCanvas = useCallback(async () => {
@@ -271,6 +355,15 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
         Collage
       </Flex>
       <VStack spacing="10">
+        <SearchSong searchWord={searchWord} setSearchWord={setSearchWord} />
+
+        <SearchSongResultForCollage
+          music={music}
+          setMusic={setMusic}
+          searchResults={searchResults}
+          collageItemId={collageItemId}
+          addHandler={AddCollageItemFromSearchResult}
+        />
         <Wrap
           maxW={["90%", "60%"]}
           minW={["90%", "60%"]}
@@ -280,7 +373,7 @@ const Collage: React.FC<{ feed: CollageProps[] }> = (props) => {
           {props.feed.map((post) => (
             <WrapItem key={post.id} overflow="hidden">
               <CollageCandidateItem
-                id={post.id}
+                id={collageItemId}
                 url={post.music.imageUrl}
                 addHandler={AddCollageItem}
               />

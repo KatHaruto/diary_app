@@ -20,16 +20,7 @@ import {
 import TrackCard from "../components/TrackCard";
 import { useCallback } from "react";
 import useSearchTracksApi from "../lib/hook/useSearchTracksAPI";
-
-type SearchSongProps = {
-  searchWord: string;
-  setSearchWord: React.Dispatch<React.SetStateAction<string>>;
-};
-type SearchSongResultProps = {
-  music: Track;
-  setMusic: React.Dispatch<React.SetStateAction<Track>>;
-  searchResults: Track[];
-};
+import { SearchSong, SearchSongResult } from "../lib/spotifySearch";
 
 type InputDiaryFormProps = {
   submitData: (e: React.SyntheticEvent) => Promise<void>;
@@ -55,57 +46,7 @@ type SubmitMenuProps = {
   toBeDisabled: boolean;
   submit: boolean;
 };
-const SearchSong: React.FC<SearchSongProps> = ({
-  searchWord,
-  setSearchWord,
-}) => {
-  return (
-    <Box position="relative" minW={["240px", "400px"]}>
-      <Input
-        value={searchWord}
-        onChange={(e) => {
-          setSearchWord(e.target.value);
-        }}
-        placeholder="search"
-      />
-    </Box>
-  );
-};
 
-const SearchSongResult: React.FC<SearchSongResultProps> = ({
-  music,
-  setMusic,
-  searchResults,
-}) => {
-  return (
-    <Box maxW={["300px", "400px"]} maxH="500px" overflow="scroll">
-      {music ? (
-        <Box>
-          <TrackCard key={music.id} track={music} />
-          <Button
-            onClick={() => {
-              setMusic(null);
-            }}
-          >
-            cancel
-          </Button>
-        </Box>
-      ) : (
-        searchResults &&
-        searchResults.map((r: Track) => (
-          <Box
-            key={r.id}
-            onClick={() => {
-              setMusic(r);
-            }}
-          >
-            <TrackCard track={r} />
-          </Box>
-        ))
-      )}
-    </Box>
-  );
-};
 const InputDiary = forwardRef<HTMLTextAreaElement, InputDiaryProps>(
   ({ title, setTitle, setContent }, ref) => {
     return (

@@ -10,6 +10,8 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
   url,
   ind,
 }) => {
+  const [emptyId, setEmptyId] = useState<number>(-1);
+
   const col = useContext<CollageContextType>(CollageContext);
   const [w, setW] = useState({
     mobile: Math.floor(350 / Math.max(col.columns, col.rows)),
@@ -25,14 +27,11 @@ const CollageItem: React.FC<{ id: number; url: string; ind: number }> = ({
   const DelCollageItem = useCallback(
     (ind) => {
       let new_collages = col.collages.slice(0, col.collages.length);
-      const deleteId =
-        new_collages
-          .filter((c) => c.id >= 0)
-          .reduce((a, b) => (a.id < b.id ? a : b)).id - 1;
       new_collages[ind] = {
-        id: deleteId,
+        id: col.emptyId,
         url: "",
       };
+      col.setEmptyId(col.emptyId - 1);
       col.setCollages(new_collages);
     },
     [col]
