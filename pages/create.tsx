@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import Router from "next/router";
